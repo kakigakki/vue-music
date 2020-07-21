@@ -11,7 +11,8 @@ module.exports = {
       .set("@", resolve("src"))
       .set("components", resolve("src/components"))
       .set("views", resolve("src/views"))
-      .set("common", resolve("src/common"));
+      .set("common", resolve("src/common"))
+      .set("api", resolve("src/api"));
   },
   devServer: {
     proxy: {
