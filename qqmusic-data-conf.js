@@ -18,11 +18,10 @@ const sendAxiosAjax = (url, params) => {
   );
 };
 const url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
-
 module.exports = function before(app, server, compiler) {
   // #region 推荐页
   // 获取 qq music 推荐页 slider信息
-  app.get("/getRecomSlider", (req, res) => {
+  app.get("/api/getTopBanner", (req, res) => {
     sendAxiosAjax(url, req.query)
       .then(response => {
         return res.json(response.data);
@@ -33,8 +32,23 @@ module.exports = function before(app, server, compiler) {
   });
 
   // 获取 qq music 推荐页 recomPlayList信息
-  app.get("/getRecomPlayList", (req, res) => {
+  app.get("/api/getRecomList/", (req, res) => {
     sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  });
+
+  // 获取 歌手的信息
+  app.get("/api/getSingerList", (req, res) => {
+    const url = "https://c.y.qq.com/v8/fcg-bin/v8.fcg";
+    axios
+      .get(url, {
+        params: req.query
+      })
       .then(response => {
         return res.json(response.data);
       })
@@ -45,7 +59,7 @@ module.exports = function before(app, server, compiler) {
 
   // 获取 qq music 推荐页 newSong信息
   // 带查询参数 pi ps 页数 及 每页显示数目
-  app.get("/getNewSongList", (req, res) => {
+  app.get("/api/getNewSongList", (req, res) => {
     sendAxiosAjax(url, req.query)
       .then(response => {
         const { pi, ps } = JSON.parse(req.query.data).new_song.songlistPage;

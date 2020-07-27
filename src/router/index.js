@@ -9,11 +9,11 @@ Vue.use(VueRouter);
 
 const routes = [{
     path: "/",
-    redirect: "/recommand"
+    redirect: "/recommend"
   },
   {
-    path: "/recommand",
-    name: "Recommand",
+    path: "/recommend",
+    name: "Recommend",
     component: Recommand
   },
   {

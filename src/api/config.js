@@ -1,5 +1,5 @@
 export const qqMusicConfigParam = {
-  g_tk: 5381,
+  g_tk: 2070674712,
   loginUin: 0,
   hostUin: 0,
   format: "json",

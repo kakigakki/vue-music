@@ -1,47 +1,92 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper" v-if="sliderItem.length">
-        <slider>
-          <div v-for="item in sliderItem" :key="item.id">
-            <a
-              :href="[
-                'https://y.qq.com/n/yqq/album/' + item.jump_info.url + '.html'
-              ]"
-            >
-              <img :src="item.pic_info.url" />
-            </a>
+    <scroll class="recommend-content" :data="recommendItem" ref="scroll">
+      <template>
+        <div>
+          <div class="slider-wrapper" v-if="sliderItem.length">
+            <slider>
+              <div v-for="item in sliderItem" :key="item.id">
+                <a
+                  :href="[
+                    'https://y.qq.com/n/yqq/album/' +
+                      item.jump_info.url +
+                      '.html',
+                  ]"
+                >
+                  <img @load="imgLoad" :src="item.pic_info.url" />
+                </a>
+              </div>
+            </slider>
           </div>
-        </slider>
+          <div class="recommend-list">
+            <p class="list-title">热门歌单推荐</p>
+            <ul>
+              <li
+                v-for="item in recommendItem"
+                :key="item.content_id"
+                class="item"
+              >
+                <span class="icon">
+                  <img v-lazy="item.cover" alt="cover" />
+                </span>
+                <div class="text">
+                  <p class="name">{{ item.username }}</p>
+                  <p class="desc">{{ item.title }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </template>
+      <div class="loading-container" v-show="!recommendItem.length">
+        <loading></loading>
       </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
 <script>
 import { ERR_OK } from "api/config.js";
-import { getSlider } from "api/recommend.js";
+import { getSlider, getRecommend } from "api/recommend.js";
 import slider from "components/slider/slider";
+import scroll from "components/scroll/myScroll";
+import loading from "components/loading/loading";
 export default {
   data() {
     return {
-      sliderItem: []
+      sliderItem: [],
+      recommendItem: [],
     };
   },
+  computed: {},
   components: {
-    slider
+    slider,
+    scroll,
+    loading,
   },
   created() {
     this._getSlider();
+    this._getRecommend();
   },
   methods: {
+    imgLoad() {
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh();
+        this.checkLoaded = true;
+      }
+    },
     _getSlider() {
-      getSlider().then(res => {
-        console.log(res);
+      getSlider().then((res) => {
         if (res.code == ERR_OK) this.sliderItem = res.focus.data.content;
       });
-    }
-  }
+    },
+    _getRecommend() {
+      getRecommend().then((res) => {
+        if (res.code == ERR_OK)
+          this.recommendItem = res.recomPlaylist.data.v_hot;
+      });
+    },
+  },
 };
 </script>
 
@@ -74,48 +119,6 @@ export default {
         color: $color-theme;
       }
 
-      .recommend-wrapper {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        .recommend-item {
-          flex: 1 0 30%;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          align-items: center;
-          margin: 5px;
-
-          .icon {
-            flex: 0 0 80px;
-            width: 100%;
-
-            img {
-              width: 100%;
-            }
-          }
-
-          .text {
-            line-height: 1.2;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            font-size: $font-size-medium;
-            color: $color-theme;
-
-            .loading-container {
-              position: absolute;
-              width: 100%;
-              top: 50%;
-              transform: translateY(-50%);
-            }
-          }
-        }
-      }
-
       .item {
         display: flex;
         box-sizing: border-box;
@@ -126,6 +129,11 @@ export default {
           flex: 0 0 60px;
           width: 60px;
           padding-right: 20px;
+
+          img {
+            width: 60px;
+            height: 60px;
+          }
         }
 
         .text {
@@ -144,29 +152,10 @@ export default {
           }
 
           .desc {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
             color: $color-text-d;
             no-wrap();
           }
         }
-
-        .interval {
-          flex: 0 0 50px;
-          text-align: center;
-          align-self: center;
-          color: $color-text-ll;
-          font-size: $font-size-small;
-          margin-left: 10px;
-        }
-      }
-
-      .loading-container {
-        position: absolute;
-        width: 100%;
-        top: 50%;
-        transform: translateY(-50%);
       }
     }
 

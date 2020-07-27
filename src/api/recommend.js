@@ -1,36 +1,41 @@
 import { qqMusicConfigParam } from "./config";
 import axios from "axios";
 
+const debug = process.env.NODE_ENV !== "production";
+
 // 获取轮播图数据
 export function getSlider() {
-  const sliderUrl = "/api";
-  const data = {
-    ...qqMusicConfigParam,
+  // 线上环境地址，根据自己的需要配置修改
+  const url = debug ?
+    "/api/getTopBanner" :
+    "http://ustbhuangyi.com/music/api/getTopBanner";
+
+  const data = Object.assign({}, qqMusicConfigParam, {
     data: {
-      comm: {
-        ct: 24
-      },
+      comm: { ct: 24 },
       focus: {
         module: "QQMusic.MusichallServer",
         method: "GetFocus",
         param: {}
       }
     }
-  };
+  });
+
   return axios
-    .get(sliderUrl, {
+    .get(url, {
       params: data
     })
     .then(res => {
-      return Promise.resolve(res.data);
+      return res.data;
     });
 }
 
 // 获取推荐列表数据
 export function getRecommend() {
-  const recommendUrl = "/api";
-  const data = {
-    ...qqMusicConfigParam,
+  const url = debug ?
+    "/api/getRecomList" :
+    "http://ustbhuangyi.com/music/api/getRecomList";
+  const data = Object.assign({}, qqMusicConfigParam, {
     data: {
       comm: {
         ct: 24
@@ -44,15 +49,15 @@ export function getRecommend() {
         module: "playlist.HotRecommendServer"
       }
     }
-  };
-  return axios.get(recommendUrl, { params: data }).then(res => {
+  });
+  return axios.get(url, { params: data }).then(res => {
     return Promise.resolve(res.data);
   });
 }
 
 // 获取最新歌单
 export function getNewSongList(pi, ps = 8) {
-  const recommendUrl = "/api";
+  const recommendUrl = "/api/getNewSongList";
   const data = {
     ...qqMusicConfigParam,
     data: {
