@@ -1,18 +1,18 @@
 <template>
-  <div class="single">
-    <liveView></liveView>
+  <div class="singer">
+    <listView :singers="singers"></listView>
   </div>
 </template>
 
 <script>
-import liveView from "components/liveView/liveView";
+import listView from "components/listView/listView";
 import { getSingerList } from "api/singer.js";
 import { Singer } from "common/js/singer.js";
 const HOT_NAME = "热门";
 const HOT_LENGTH = 10;
 export default {
   components: {
-    liveView,
+    listView,
   },
   data() {
     return {
@@ -26,7 +26,6 @@ export default {
     _getSinger() {
       getSingerList().then((res) => {
         this.singers = this._normalizeSingers(res.data.list);
-        console.log(this.singers);
       });
     },
     _normalizeSingers(singers) {
@@ -57,10 +56,28 @@ export default {
           }
         }
       }
-      return Object.entries(map).filter((x) => /[A-z]/.test(x[0]));
+      let hot = [];
+      let res = [];
+      for (const key in map) {
+        if (map[key].title == HOT_NAME) {
+          hot.push(map[key]);
+        } else if (/[A-z]/.test(key[0])) {
+          res.push(map[key]);
+        }
+      }
+      return hot.concat(
+        res.sort((a, b) => a.title.charCodeAt(0) - b.title.charCodeAt(0))
+      );
     },
   },
 };
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.singer {
+  position: fixed;
+  top: 88px;
+  bottom: 0;
+  width: 100%;
+}
+</style>
