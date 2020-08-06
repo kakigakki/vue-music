@@ -24,3 +24,28 @@ export function getSingerList() {
       return res.data;
     });
 }
+
+export function getSingerSongList(singerId) {
+  const url = debug ?
+    "/api/getSingerSongList" :
+    "http://ustbhuangyi.com/music/api/getSingerSongList";
+
+  const data = Object.assign({}, qqMusicConfigParam, {
+    hostUin: 0,
+    needNewCode: 0,
+    platform: 'yqq',
+    order: 'listen',
+    begin: 0,
+    num: 80,
+    songstatus: 1,
+    singermid: singerId
+  });
+
+  return axios
+    .get(url, {
+      params: data
+    })
+    .then(res => {
+      return res.data;
+    });
+}

@@ -1,6 +1,7 @@
 <template>
   <div class="singer">
-    <listView :singers="singers"></listView>
+    <listView :singers="singers" @enterDetail="enterDetail"></listView>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -8,6 +9,7 @@
 import listView from "components/listView/listView";
 import { getSingerList } from "api/singer.js";
 import { Singer } from "common/js/singer.js";
+import { mapMutations } from "vuex";
 const HOT_NAME = "热门";
 const HOT_LENGTH = 10;
 export default {
@@ -23,11 +25,21 @@ export default {
     this._getSinger();
   },
   methods: {
+    //进入详情页点击事件
+    enterDetail(singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`,
+      });
+      //将singer存进vuex,方便详情页使用
+      this._setSinger(singer);
+    },
+    //异步获取歌手们的信息
     _getSinger() {
       getSingerList().then((res) => {
         this.singers = this._normalizeSingers(res.data.list);
       });
     },
+    //包装歌手数据
     _normalizeSingers(singers) {
       let map = {
         hot: {
@@ -69,6 +81,10 @@ export default {
         res.sort((a, b) => a.title.charCodeAt(0) - b.title.charCodeAt(0))
       );
     },
+    //将this._setSinger映射为this.$store.commit('SET_SINGER')
+    ...mapMutations({
+      _setSinger: "SET_SINGER",
+    }),
   },
 };
 </script>

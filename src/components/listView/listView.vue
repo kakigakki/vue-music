@@ -15,6 +15,7 @@
           class="list-group-item"
           v-for="(singer, index) in item.items"
           :key="index"
+          @click="enterDetail(singer)"
         >
           <img v-lazy="singer.avatar" alt="avatar" class="avatar" />
           <p class="name">{{ singer.name }}</p>
@@ -30,7 +31,7 @@
         class="item"
         v-for="(item, index) in titleWord"
         :key="index"
-        :class="{ current: currentIndex == index }"
+        :class="{ current: currentIndex === index }"
       >
         {{ item[0] }}
       </li>
@@ -100,6 +101,9 @@ export default {
       const anchorIndex = this.touch.startIndex + delta;
       this._scrollTo(anchorIndex);
     },
+    enterDetail(singer) {
+      this.$emit("enterDetail", singer);
+    },
     //计算每块分区列表的内容的高度
     _calculateHeights() {
       this.heights = [];
@@ -113,7 +117,7 @@ export default {
       if (index == 0) {
         this.$refs.scroll.scrollTo(0, 0, 0);
       } else {
-        this.$refs.scroll.scrollTo(0, -this.heights[index - 1], 100);
+        this.$refs.scroll.scrollTo(0, -this.heights[index - 1], 0);
       }
     },
   },
@@ -138,9 +142,8 @@ export default {
         this.currentIndex = 0;
       } else {
         for (let i = 1; i < this.heights.length; i++) {
-          if (nVal > this.heights[i - 1] && nVal < this.heights[i]) {
+          if (nVal >= this.heights[i - 1] && nVal < this.heights[i]) {
             this.currentIndex = i;
-            break;
           }
         }
       }
@@ -229,7 +232,7 @@ export default {
 
   .list-fixed {
     position: absolute;
-    top: 0;
+    top: 0px;
     left: 0;
     width: 100%;
 
