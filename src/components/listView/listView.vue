@@ -26,6 +26,7 @@
       class="list-shortcut"
       @touchstart="touchstart"
       @touchmove.stop.prevent="touchmove"
+      v-show="titleWord.length"
     >
       <li
         class="item"
@@ -36,7 +37,11 @@
         {{ item[0] }}
       </li>
     </ul>
-    <div class="list-fixed" ref="fixedTitle" v-show="currentIndex != -1">
+    <div
+      class="list-fixed"
+      ref="fixedTitle"
+      v-show="singers.length && currentIndex != -1"
+    >
       <p class="fixed-title">
         {{ titleWord[currentIndex] }}
       </p>
