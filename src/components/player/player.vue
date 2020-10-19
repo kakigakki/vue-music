@@ -38,10 +38,10 @@
             <div class="dot active"></div>
             <div class="dot"></div>
           </div>
-          <div class="progress-wrapper">
-            <div class="time time-l"></div>
-            <div class="time time-r"></div>
-            <div class="progress-bar"></div>
+          <div class="progress-wrapper" v-if="this.$refs.audio">
+            <div class="time time-l">{{formatTime(currentTime)}}</div>
+             <div class="progress-bar-wrapper"> <progressBar :percent="percent"></progressBar></div>
+            <div class="time time-r">{{formatTime(currentSong.duration)}}</div>
           </div>
           <div class="operators">
             <div class="icon i-left">
@@ -97,6 +97,7 @@
       ref="audio"
       @playing="ready"
       @error="error"
+      @timeupdate="timeUpdate"
     ></audio>
   </div>
 </template>
@@ -104,12 +105,17 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
+import progressBar from "../progressBar/progressBar"
 export default {
   data() {
     return {
       currentSong: {},
       isSongReady: false,
+      currentTime:0
     };
+  },
+  components:{
+    progressBar
   },
   computed: {
     ...mapGetters([
@@ -133,6 +139,9 @@ export default {
     disableCls() {
       return this.isSongReady ? "" : "disable";
     },
+    percent(){
+      return this.currentTime/this.currentSong.duration
+    }
   },
   watch: {
     getCurrentIndex(nVal) {
@@ -271,6 +280,15 @@ export default {
         y: diffY,
         scale: diffScale,
       };
+    },
+    //格式化时间
+    formatTime(sec){
+      const min = ((sec/60 | 0)+"").padStart(2,"0")
+      const seconds = ((sec%60 |0)+"").padStart(2,"0")
+      return `${min}:${seconds}` 
+    },
+    timeUpdate(e){
+      this.currentTime = e.target.currentTime
     },
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
@@ -477,12 +495,12 @@ export default {
         .time {
           color: $color-text;
           font-size: $font-size-small;
-          flex: 0 0 30px;
+          flex: 0 0 35px;
           line-height: 30px;
           width: 30px;
 
           &.time-l {
-            text-align: left;
+            text-align left
           }
 
           &.time-r {
