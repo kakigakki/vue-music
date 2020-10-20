@@ -40,7 +40,12 @@
           </div>
           <div class="progress-wrapper" v-if="this.$refs.audio">
             <div class="time time-l">{{formatTime(currentTime)}}</div>
-             <div class="progress-bar-wrapper"> <progressBar :percent="percent"></progressBar></div>
+             <div class="progress-bar-wrapper"> 
+               <progressBar
+                :percent="percent"
+                @dragProgress="dragProgress"
+                @dragEnd="dragEnd"/>
+               </div>
             <div class="time time-r">{{formatTime(currentSong.duration)}}</div>
           </div>
           <div class="operators">
@@ -289,6 +294,14 @@ export default {
     },
     timeUpdate(e){
       this.currentTime = e.target.currentTime
+    },
+    dragProgress(percent){
+      //只是修改界面上的时间进度，不改变歌曲时间
+      this.currentTime = this.currentSong.duration*percent |0
+    },
+    dragEnd(percent){
+         //修改歌曲时间
+      this.$refs.audio.currentTime = this.currentSong.duration*percent |0
     },
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
