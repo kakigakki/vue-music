@@ -21,7 +21,6 @@ export default {
    return {
       maxBarClientWidth : 0,
       touchData:{
-        initPos:0,
         isTouchMove:false,
         percent:0
       },
@@ -56,9 +55,6 @@ export default {
        this.$refs.progressBtn.style.transform= `translate3d(${length}px,0,0)`
     },
     touchStart(e){
-      console.log(e.touches[0].pageX);
-      //获取总进度条距离左边边框的距离
-      this.touchData.initPos = e.touches[0].pageX-this.progressBarClientX
        //开始拖动时，标记
       this.touchData.isTouchMove = true
     },
@@ -80,7 +76,7 @@ export default {
      console.log(jumpDis);
        this.touchData.percent = jumpDis/this.maxBarClientWidth
       this.$emit("dragEnd",this.touchData.percent)
-     this.setProgress(jumpDis)
+      this.setProgress(jumpDis)
     }
   }
 }

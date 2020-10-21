@@ -90,7 +90,9 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniPlayCls" @click.stop="togglePlaying"></i>
+          <progressCircle :radius="32" :percent="percent">
+            <i :class="miniPlayCls" @click.stop="togglePlaying" class="icon-mini"></i>
+          </progressCircle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -110,7 +112,8 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
-import progressBar from "../progressBar/progressBar"
+import progressBar from "./progressBar/progressBar"
+import progressCircle from "./progress-circle/progress-circle"
 export default {
   data() {
     return {
@@ -120,7 +123,8 @@ export default {
     };
   },
   components:{
-    progressBar
+    progressBar,
+    progressCircle
   },
   computed: {
     ...mapGetters([
@@ -156,7 +160,8 @@ export default {
     currentSong() {
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
-        this.setPlaying(true);
+        this.setPlaying(true)
+        this.$refs.audio.play()
       });
     },
     getPlayingState(nVal) {
@@ -166,6 +171,12 @@ export default {
         nVal ? audio.play() : audio.pause();
       });
     },
+    currentTime(nVal){
+      //当前歌曲播放完， 自动进入下一首
+      if(nVal>=this.currentSong.duration){
+        this.next()
+      }
+    }
   },
   methods: {
     back() {
@@ -300,6 +311,10 @@ export default {
       this.currentTime = this.currentSong.duration*percent |0
     },
     dragEnd(percent){
+      if(!this.isSongReady){
+        return
+      }
+
          //修改歌曲时间
       this.$refs.audio.currentTime = this.currentSong.duration*percent |0
     },
