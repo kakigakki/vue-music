@@ -50,7 +50,7 @@
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i class="icon-loop"></i>
+              <i :class="playModeCls" @click="toggleMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i class="icon-prev" @click="prev"></i>
@@ -114,6 +114,10 @@ import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 import progressBar from "./progressBar/progressBar"
 import progressCircle from "./progress-circle/progress-circle"
+import {getLyric} from "api/song.js";
+import { mode } from "common/js/config.js"
+import { shuffle } from "common/js/util.js"
+
 export default {
   data() {
     return {
@@ -129,9 +133,11 @@ export default {
   computed: {
     ...mapGetters([
       "getPlayingState", //播放状态
-      "getPlaylist", //播放列表
+      "getPlaylist", //当前播放模式列表
       "getCurrentIndex", //当前歌曲索引
-      "getFullScreen", //是否全屏
+      "getFullScreen", //是否全屏,
+      "getMode", //播放模式
+      "getSeqlist"//顺序播放列表
     ]),
     playCls() {
       //全屏的播放或暂停图标
@@ -150,6 +156,11 @@ export default {
     },
     percent(){
       return this.currentTime/this.currentSong.duration
+    },
+    playModeCls(){
+      return this.getMode===mode.seq?"icon-sequence"
+            :this.getMode===mode.random?"icon-random"
+            :"icon-loop"
     }
   },
   watch: {
@@ -157,10 +168,13 @@ export default {
       this.currentSong = this.getPlaylist[nVal];
       this.$refs.bgImg.style.backgroundImage = `url("${this.currentSong.image}")`;
     },
-    currentSong() {
+    currentSong(nVal) {
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
         this.setPlaying(true)
+      //   getLyric(nVal.mid).then(res=>{
+          
+      // })
         this.$refs.audio.play()
       });
     },
@@ -172,9 +186,15 @@ export default {
       });
     },
     currentTime(nVal){
-      //当前歌曲播放完， 自动进入下一首
+      //当前歌曲播放完， 
       if(nVal>=this.currentSong.duration){
+        if(this.getMode===mode.loop){
+          //如果是单曲循环，则重新播放
+          this.$refs.audio.currentTime = 0
+        }else{
+          //自动进入下一首
         this.next()
+        }
       }
     }
   },
@@ -318,10 +338,31 @@ export default {
          //修改歌曲时间
       this.$refs.audio.currentTime = this.currentSong.duration*percent |0
     },
+    toggleMode(){
+      const nextMode = (this.getMode+1)%3
+      this.setMode(nextMode)
+      if(nextMode===mode.random){
+        //打乱顺序列表
+        let randomList = shuffle(this.getSeqlist)
+        this.setPlaylist(randomList)
+      }else{
+        this.setPlaylist(this.getSeqlist)
+      }
+      const songIndex = this._findSongIndex(this.currentSong.name)
+      this.setCurrentIndex(songIndex)
+    },
+    //当播放博士更改时，需要改变当前歌曲在新的播放列表中的索引
+    _findSongIndex(name){
+      return this.getPlaylist.findIndex((item)=>{
+        return item.name ===name
+      })
+    },
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
       setPlaying: "SET_PLAYING",
       setCurrentIndex: "SET_CURRENT_INDEX",
+      setMode:"SET_MODE",
+      setPlaylist:"SET_PLAYLIST"
     }),
   },
 };

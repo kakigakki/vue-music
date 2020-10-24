@@ -8,7 +8,7 @@
     </div>
     <div class="bg-image" :style="{ backgroundImage: getBgImg }" ref="bg">
       <div class="play-wrapper" v-show="showPlayBtn && data.length">
-        <div class="play">
+        <div class="play" @click="randomPlay">
           <i class="icon-play"></i>
           <p class="text">随机播放全部</p>
         </div>
@@ -97,7 +97,11 @@ export default {
         index,
       });
     },
-    ...mapActions(["selectPlaySong"]),
+    randomPlay(){
+      console.log(this.data);
+      this.randomPlayAll(this.data)
+    },
+    ...mapActions(["selectPlaySong","randomPlayAll"]),
   },
   watch: {
     scrollY(nVal) {
