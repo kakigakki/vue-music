@@ -32,6 +32,15 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
+          <div class="middle-r">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                   <p v-for="(item, index) in currentLyric.lines" :key="index" class="text">
+                     {{item.txt}}
+                   </p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
@@ -39,14 +48,17 @@
             <div class="dot"></div>
           </div>
           <div class="progress-wrapper" v-if="this.$refs.audio">
-            <div class="time time-l">{{formatTime(currentTime)}}</div>
-             <div class="progress-bar-wrapper"> 
-               <progressBar
+            <div class="time time-l">{{ formatTime(currentTime) }}</div>
+            <div class="progress-bar-wrapper">
+              <progressBar
                 :percent="percent"
                 @dragProgress="dragProgress"
-                @dragEnd="dragEnd"/>
-               </div>
-            <div class="time time-r">{{formatTime(currentSong.duration)}}</div>
+                @dragEnd="dragEnd"
+              />
+            </div>
+            <div class="time time-r">
+              {{ formatTime(currentSong.duration) }}
+            </div>
           </div>
           <div class="operators">
             <div class="icon i-left">
@@ -91,7 +103,11 @@
         </div>
         <div class="control">
           <progressCircle :radius="32" :percent="percent">
-            <i :class="miniPlayCls" @click.stop="togglePlaying" class="icon-mini"></i>
+            <i
+              :class="miniPlayCls"
+              @click.stop="togglePlaying"
+              class="icon-mini"
+            ></i>
           </progressCircle>
         </div>
         <div class="control">
@@ -112,23 +128,25 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
-import progressBar from "./progressBar/progressBar"
-import progressCircle from "./progress-circle/progress-circle"
-import {getLyric} from "api/song.js";
-import { mode } from "common/js/config.js"
-import { shuffle } from "common/js/util.js"
+import progressBar from "./progressBar/progressBar";
+import progressCircle from "./progress-circle/progress-circle";
+import { getLyric } from "api/song.js";
+import { mode } from "common/js/config.js";
+import { shuffle } from "common/js/util.js";
+import Lyric from "lyric-parser"
 
 export default {
   data() {
     return {
       currentSong: {},
       isSongReady: false,
-      currentTime:0
+      currentTime: 0,
+      currentLyric:null
     };
   },
-  components:{
+  components: {
     progressBar,
-    progressCircle
+    progressCircle,
   },
   computed: {
     ...mapGetters([
@@ -137,7 +155,7 @@ export default {
       "getCurrentIndex", //当前歌曲索引
       "getFullScreen", //是否全屏,
       "getMode", //播放模式
-      "getSeqlist"//顺序播放列表
+      "getSeqlist", //顺序播放列表
     ]),
     playCls() {
       //全屏的播放或暂停图标
@@ -154,14 +172,16 @@ export default {
     disableCls() {
       return this.isSongReady ? "" : "disable";
     },
-    percent(){
-      return this.currentTime/this.currentSong.duration
+    percent() {
+      return this.currentTime / this.currentSong.duration;
     },
-    playModeCls(){
-      return this.getMode===mode.seq?"icon-sequence"
-            :this.getMode===mode.random?"icon-random"
-            :"icon-loop"
-    }
+    playModeCls() {
+      return this.getMode === mode.seq
+        ? "icon-sequence"
+        : this.getMode === mode.random
+        ? "icon-random"
+        : "icon-loop";
+    },
   },
   watch: {
     getCurrentIndex(nVal) {
@@ -171,11 +191,9 @@ export default {
     currentSong(nVal) {
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
-        this.setPlaying(true)
-      //   getLyric(nVal.mid).then(res=>{
-          
-      // })
-        this.$refs.audio.play()
+        this.setPlaying(true);
+        this.getLyric()
+        this.$refs.audio.play();
       });
     },
     getPlayingState(nVal) {
@@ -185,18 +203,18 @@ export default {
         nVal ? audio.play() : audio.pause();
       });
     },
-    currentTime(nVal){
-      //当前歌曲播放完， 
-      if(nVal>=this.currentSong.duration){
-        if(this.getMode===mode.loop){
+    currentTime(nVal) {
+      //当前歌曲播放完，
+      if (nVal >= this.currentSong.duration) {
+        if (this.getMode === mode.loop) {
           //如果是单曲循环，则重新播放
-          this.$refs.audio.currentTime = 0
-        }else{
+          this.$refs.audio.currentTime = 0;
+        } else {
           //自动进入下一首
-        this.next()
+          this.next();
         }
       }
-    }
+    },
   },
   methods: {
     back() {
@@ -318,51 +336,57 @@ export default {
       };
     },
     //格式化时间
-    formatTime(sec){
-      const min = ((sec/60 | 0)+"").padStart(2,"0")
-      const seconds = ((sec%60 |0)+"").padStart(2,"0")
-      return `${min}:${seconds}` 
+    formatTime(sec) {
+      const min = (((sec / 60) | 0) + "").padStart(2, "0");
+      const seconds = ((sec % 60 | 0) + "").padStart(2, "0");
+      return `${min}:${seconds}`;
     },
-    timeUpdate(e){
-      this.currentTime = e.target.currentTime
+    timeUpdate(e) {
+      this.currentTime = e.target.currentTime;
     },
-    dragProgress(percent){
+    dragProgress(percent) {
       //只是修改界面上的时间进度，不改变歌曲时间
-      this.currentTime = this.currentSong.duration*percent |0
+      this.currentTime = (this.currentSong.duration * percent) | 0;
     },
-    dragEnd(percent){
-      if(!this.isSongReady){
-        return
+    dragEnd(percent) {
+      if (!this.isSongReady) {
+        return;
       }
 
-         //修改歌曲时间
-      this.$refs.audio.currentTime = this.currentSong.duration*percent |0
+      //修改歌曲时间
+      this.$refs.audio.currentTime = (this.currentSong.duration * percent) | 0;
     },
-    toggleMode(){
-      const nextMode = (this.getMode+1)%3
-      this.setMode(nextMode)
-      if(nextMode===mode.random){
+    toggleMode() {
+      const nextMode = (this.getMode + 1) % 3;
+      this.setMode(nextMode);
+      if (nextMode === mode.random) {
         //打乱顺序列表
-        let randomList = shuffle(this.getSeqlist)
-        this.setPlaylist(randomList)
-      }else{
-        this.setPlaylist(this.getSeqlist)
+        let randomList = shuffle(this.getSeqlist);
+        this.setPlaylist(randomList);
+      } else {
+        this.setPlaylist(this.getSeqlist);
       }
-      const songIndex = this._findSongIndex(this.currentSong.name)
-      this.setCurrentIndex(songIndex)
+      const songIndex = this._findSongIndex(this.currentSong.name);
+      this.setCurrentIndex(songIndex);
     },
     //当播放博士更改时，需要改变当前歌曲在新的播放列表中的索引
-    _findSongIndex(name){
-      return this.getPlaylist.findIndex((item)=>{
-        return item.name ===name
+    _findSongIndex(name) {
+      return this.getPlaylist.findIndex((item) => {
+        return item.name === name;
+      });
+    },
+    getLyric(){
+      console.log(this.currentSong);
+      this.currentSong.songLyric().then(res=>{
+        this.currentLyric = new Lyric(res)
       })
     },
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
       setPlaying: "SET_PLAYING",
       setCurrentIndex: "SET_CURRENT_INDEX",
-      setMode:"SET_MODE",
-      setPlaylist:"SET_PLAYLIST"
+      setMode: "SET_MODE",
+      setPlaylist: "SET_PLAYLIST",
     }),
   },
 };
@@ -569,7 +593,7 @@ export default {
           width: 30px;
 
           &.time-l {
-            text-align left
+            text-align: left;
           }
 
           &.time-r {
