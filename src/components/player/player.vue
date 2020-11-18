@@ -32,15 +32,21 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
-          <div class="middle-r">
+          <scroll class="middle-r" ref="lyricList">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
-                   <p v-for="(item, index) in currentLyric.lines" :key="index" class="text">
-                     {{item.txt}}
-                   </p>
+                <p
+                  ref="lyricLine"
+                  v-for="(item, index) in currentLyric.lines"
+                  :key="index"
+                  class="text"
+                  :class="{current:index===currentLineNum}"
+                >
+                  {{ item.txt }}
+                </p>
               </div>
             </div>
-          </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
@@ -133,7 +139,8 @@ import progressCircle from "./progress-circle/progress-circle";
 import { getLyric } from "api/song.js";
 import { mode } from "common/js/config.js";
 import { shuffle } from "common/js/util.js";
-import Lyric from "lyric-parser"
+import scroll from "components/scroll/myScroll";
+import Lyric from "lyric-parser";
 
 export default {
   data() {
@@ -141,12 +148,14 @@ export default {
       currentSong: {},
       isSongReady: false,
       currentTime: 0,
-      currentLyric:null
+      currentLyric: null,
+      currentLineNum:0
     };
   },
   components: {
     progressBar,
     progressCircle,
+    scroll,
   },
   computed: {
     ...mapGetters([
@@ -192,15 +201,19 @@ export default {
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
         this.setPlaying(true);
-        this.getLyric()
-        this.$refs.audio.play();
+        this.getLyric();
+        this.$refs.audio.play()
       });
     },
     getPlayingState(nVal) {
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
         const audio = this.$refs.audio;
-        nVal ? audio.play() : audio.pause();
+        if (nVal) {
+          audio.play();
+        } else {
+          audio.pause();
+        }
       });
     },
     currentTime(nVal) {
@@ -369,18 +382,30 @@ export default {
       const songIndex = this._findSongIndex(this.currentSong.name);
       this.setCurrentIndex(songIndex);
     },
-    //当播放博士更改时，需要改变当前歌曲在新的播放列表中的索引
+    //当播放模式更改时，需要改变当前歌曲在新的播放列表中的索引
     _findSongIndex(name) {
       return this.getPlaylist.findIndex((item) => {
         return item.name === name;
       });
     },
-    getLyric(){
-      console.log(this.currentSong);
-      this.currentSong.songLyric().then(res=>{
-        this.currentLyric = new Lyric(res)
-      })
+    getLyric() {
+      this.currentSong.songLyric().then((res) => {
+        this.currentLyric = new Lyric(res, this.lyricHandler);
+        if(this.getPlayingState){
+          this.currentLyric.play()
+        }
+      });
     },
+    lyricHandler({ lineNum, txt }) {
+      this.currentLineNum = lineNum
+      if(lineNum>5){
+        let lineEl = this.$refs.lyricLine[lineNum-5]
+        this.$refs.lyricList.scrollToElement(lineEl,1000) 
+      }else{
+          this.$refs.lyricList.scrollTo(0,0) 
+      }
+    },
+
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
       setPlaying: "SET_PLAYING",
