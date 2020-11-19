@@ -16,7 +16,12 @@
           <p class="title" v-html="currentSong.name"></p>
           <p class="subtitle" v-html="currentSong.singer"></p>
         </div>
-        <div class="middle">
+        <div
+          class="middle"
+          @touchstart="touchStart"
+          @touchmove="touchMove"
+          @touchend="touchEnd"
+        >
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
@@ -40,7 +45,7 @@
                   v-for="(item, index) in currentLyric.lines"
                   :key="index"
                   class="text"
-                  :class="{current:index===currentLineNum}"
+                  :class="{ current: index === currentLineNum }"
                 >
                   {{ item.txt }}
                 </p>
@@ -50,8 +55,11 @@
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <div class="dot active"></div>
-            <div class="dot"></div>
+            <div class="dot" :class="{ active: currentMiddle === 'cd' }"></div>
+            <div
+              class="dot"
+              :class="{ active: currentMiddle === 'lyric' }"
+            ></div>
           </div>
           <div class="progress-wrapper" v-if="this.$refs.audio">
             <div class="time time-l">{{ formatTime(currentTime) }}</div>
@@ -141,7 +149,10 @@ import { mode } from "common/js/config.js";
 import { shuffle } from "common/js/util.js";
 import scroll from "components/scroll/myScroll";
 import Lyric from "lyric-parser";
+import { prefixStyle } from "common/js/dom.js";
 
+const transform = prefixStyle("transform");
+const transition = prefixStyle("transition");
 export default {
   data() {
     return {
@@ -149,8 +160,12 @@ export default {
       isSongReady: false,
       currentTime: 0,
       currentLyric: null,
-      currentLineNum:0
+      currentLineNum: 0,
+      currentMiddle: "cd",
     };
+  },
+  created() {
+    this.touchLyric = {};
   },
   components: {
     progressBar,
@@ -202,7 +217,7 @@ export default {
         //DOM更新完后再进行播放歌曲操作
         this.setPlaying(true);
         this.getLyric();
-        this.$refs.audio.play()
+        this.$refs.audio.play();
       });
     },
     getPlayingState(nVal) {
@@ -391,21 +406,81 @@ export default {
     getLyric() {
       this.currentSong.songLyric().then((res) => {
         this.currentLyric = new Lyric(res, this.lyricHandler);
-        if(this.getPlayingState){
-          this.currentLyric.play()
+        if (this.getPlayingState) {
+          this.currentLyric.play();
         }
       });
     },
     lyricHandler({ lineNum, txt }) {
-      this.currentLineNum = lineNum
-      if(lineNum>5){
-        let lineEl = this.$refs.lyricLine[lineNum-5]
-        this.$refs.lyricList.scrollToElement(lineEl,1000) 
-      }else{
-          this.$refs.lyricList.scrollTo(0,0) 
+      this.currentLineNum = lineNum;
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5];
+        this.$refs.lyricList.scrollToElement(lineEl, 1000);
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0);
       }
     },
+    touchStart(e) {
+      this.touchLyric.init = true;
+      this.touchLyric.startX = e.touches[0].pageX;
+      this.touchLyric.startY = e.touches[0].pageY;
+    },
+    touchMove(e) {
+      if (!this.touchLyric.init) return;
+      const { startX, startY } = this.touchLyric;
+      const touch = e.touches[0];
+      let deltaX = touch.pageX - startX;
+      let deltaY = touch.pageY - startY;
+      //如果移动的是纵坐标，则不响应
+      if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+      const left = this.currentMiddle === "cd" ? 0 : -window.innerWidth;
+      //算出偏移距离，很精妙，多学点
+      const lyricOffset = Math.min(
+        0,
+        Math.max(-window.innerWidth, deltaX + left)
+      );
+      this.touchLyric.percent = lyricOffset / -window.innerWidth;
+      console.log(this.touchLyric.percent);
+      //移动歌词画面
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${lyricOffset}px,0,0)`;
+      //隐藏cd画面
+      this.$refs.cdWrapper.style.opacity = 1 - this.touchLyric.percent;
+            //设置位移动画时间
+      this.$refs.lyricList.$el.style[transition] = "";
+      //隐藏cd画面
+      this.$refs.cdWrapper.style[transition] = "";
+    },
+    touchEnd(e) {
+      let offset;
+      if (this.currentMiddle === "cd") {
+        if (this.touchLyric.percent > 0.2) {
+          offset = -window.innerWidth;
+          this.currentMiddle = "lyric";
+        } else {
+          offset = 0;
+        }
+      } else {
+        if (this.touchLyric.percent < 0.8) {
+          offset = 0;
+          this.currentMiddle = "cd";
+        } else {
+          offset = -window.innerWidth;
+        }
+      }
 
+      //设置位移动画时间
+      this.$refs.lyricList.$el.style[transition] = `0.2s all`;
+      //隐藏cd画面
+      this.$refs.cdWrapper.style[transition] = `0.2s all`;
+      //移动歌词画面
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offset}px,0,0)`;
+      //隐藏cd画面
+      this.$refs.cdWrapper.style.opacity = offset===0?1:0;
+    },
     ...mapMutations({
       setFullScreen: "SET_FULLSCREEN",
       setPlaying: "SET_PLAYING",
