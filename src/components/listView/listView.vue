@@ -125,6 +125,9 @@ export default {
         this.$refs.scroll.scrollTo(0, -this.heights[index - 1], 0);
       }
     },
+    refresh(){
+      this.$refs.scroll.refresh()
+    }
   },
   created() {
     //不需要响应式的数据在这边创建

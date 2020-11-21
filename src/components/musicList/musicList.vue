@@ -41,11 +41,13 @@ import songList from "components/songList/songList";
 import loading from "components/loading/loading";
 import { prefixStyle } from "common/js/dom";
 import { mapActions } from "vuex";
+import { playerMixin } from "common/js/mixins.js";
 
 const TITLE_HEIGHT = 40;
 const transform = prefixStyle("transform");
 const filter = prefixStyle("filter");
 export default {
+  mixins: [playerMixin],
   props: {
     title: {
       type: String,
@@ -97,11 +99,19 @@ export default {
         index,
       });
     },
-    randomPlay(){
+    randomPlay() {
       console.log(this.data);
-      this.randomPlayAll(this.data)
+      this.randomPlayAll(this.data);
     },
-    ...mapActions(["selectPlaySong","randomPlayAll"]),
+    bottomPlayer() {
+      if (this.getPlaylist.length > 0) {
+        this.$refs.scrollList.$el.style.bottom = this.MINI_PLAYER_HEIGHT + "px";
+      } else {
+        this.$refs.scrollList.$el.style.bottom = 0;
+      }
+      this.$refs.scrollList.refresh();
+    },
+    ...mapActions(["selectPlaySong", "randomPlayAll"]),
   },
   watch: {
     scrollY(nVal) {

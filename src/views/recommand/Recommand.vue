@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <scroll class="recommend-content" :data="recommendItem" ref="scroll">
       <template>
         <div>
@@ -51,7 +51,9 @@ import { getSlider, getRecommend } from "api/recommend.js";
 import slider from "components/slider/slider";
 import scroll from "components/scroll/myScroll";
 import loading from "components/loading/loading";
+import {playerMixin} from "common/js/mixins.js"
 export default {
+    mixins:[playerMixin],
   data() {
     return {
       sliderItem: [],
@@ -85,6 +87,14 @@ export default {
         if (res.code == ERR_OK)
           this.recommendItem = res.recomPlaylist.data.v_hot;
       });
+    },
+    bottomPlayer(){
+      if(this.getPlaylist.length>0){
+          this.$refs.recommend.style.bottom =  this.MINI_PLAYER_HEIGHT+"px"
+      }else{
+         this.$refs.recommend.style.bottom =  0
+      }
+      this.$refs.scroll.refresh()
     },
   },
 };

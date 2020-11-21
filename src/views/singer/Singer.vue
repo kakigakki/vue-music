@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <listView :singers="singers" @enterDetail="enterDetail"></listView>
+  <div class="singer" ref="singer">
+    <listView :singers="singers" @enterDetail="enterDetail" ref="listView"></listView>
     <router-view></router-view>
   </div>
 </template>
@@ -10,9 +10,11 @@ import listView from "components/listView/listView";
 import { getSingerList } from "api/singer.js";
 import { Singer } from "common/js/singer.js";
 import { mapMutations } from "vuex";
+import {playerMixin} from "common/js/mixins.js"
 const HOT_NAME = "热门";
 const HOT_LENGTH = 10;
 export default {
+    mixins:[playerMixin],
   components: {
     listView,
   },
@@ -32,6 +34,14 @@ export default {
       });
       //将singer存进vuex,方便详情页使用
       this._setSinger(singer);
+    },
+    bottomPlayer(){
+      if(this.getPlaylist.length>0){
+        this.$refs.singer.style.bottom = this.MINI_PLAYER_HEIGHT+"px"
+      }else{
+        this.$refs.singer.style.bottom = 0
+      }
+      this.$refs.listView.refresh()
     },
     //异步获取歌手们的信息
     _getSinger() {
