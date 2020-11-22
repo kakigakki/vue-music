@@ -32,8 +32,9 @@ module.exports = function before(app, server, compiler) {
             });
     });
 
-    // 获取 qq music 推荐页 recomPlayList信息
-    app.get("/api/getRecomList/", (req, res) => {
+    //获取 qq music 推荐页 recomPlayList信息
+    app.get('/api/getDiscList', function(req, res) {
+        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
         sendAxiosAjax(url, req.query)
             .then(response => {
                 return res.json(response.data);
@@ -41,7 +42,25 @@ module.exports = function before(app, server, compiler) {
             .catch(e => {
                 console.log(e);
             });
-    });
+    })
+
+    app.get('/api/getCdInfo', (req, res) => {
+        const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        axios.get(url, {
+            headers: {
+                referer: 'https://c.y.qq.com/',
+                host: 'c.y.qq.com'
+            },
+            params: req.query
+        }).then((response) => {
+            var ret = response.data
+            return res.json(ret)
+        }).catch((e) => {
+            console.log(e)
+        })
+    })
+
+
 
     // 获取 歌手的信息
     app.get("/api/getSingerList", (req, res) => {

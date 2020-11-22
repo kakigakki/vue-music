@@ -5,3 +5,4 @@ export const SET_PLAYLIST = "SET_PLAYLIST"
 export const SET_SEQLIST = "SET_SEQLIST"
 export const SET_MODE = "SET_MODE"
 export const SET_CURRENT_INDEX = "SET_CURRENT_INDEX"
+export const SET_DISC = "SET_DISC";

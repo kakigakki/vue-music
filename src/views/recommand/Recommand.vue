@@ -1,6 +1,6 @@
 <template>
   <div class="recommend" ref="recommend">
-    <scroll class="recommend-content" :data="recommendItem" ref="scroll">
+    <scroll class="recommend-content" :data="discList" ref="scroll">
       <template>
         <div>
           <div class="slider-wrapper" v-if="sliderItem.length">
@@ -22,42 +22,45 @@
             <p class="list-title">热门歌单推荐</p>
             <ul>
               <li
-                v-for="item in recommendItem"
-                :key="item.content_id"
+                v-for="(item,index) in discList"
+                :key="index"
                 class="item"
+                @click="selectSong(item)"
               >
                 <span class="icon">
-                  <img v-lazy="item.cover" alt="cover" />
+                  <img v-lazy="item.imgurl" alt="cover" />
                 </span>
                 <div class="text">
-                  <p class="name">{{ item.username }}</p>
-                  <p class="desc">{{ item.title }}</p>
+                  <p class="name" v-html="item.creator.name"></p>
+                  <p class="desc" v-html="item.dissname"></p>
                 </div>
               </li>
             </ul>
           </div>
         </div>
       </template>
-      <div class="loading-container" v-show="!recommendItem.length">
+      <div class="loading-container" v-show="!discList.length">
         <loading></loading>
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import { ERR_OK } from "api/config.js";
-import { getSlider, getRecommend } from "api/recommend.js";
+import { getSlider, getSongList,getDiscList } from "api/recommend.js";
 import slider from "components/slider/slider";
 import scroll from "components/scroll/myScroll";
 import loading from "components/loading/loading";
 import {playerMixin} from "common/js/mixins.js"
+import {mapMutations} from "vuex"
 export default {
     mixins:[playerMixin],
   data() {
     return {
       sliderItem: [],
-      recommendItem: [],
+      discList: [],
     };
   },
   computed: {},
@@ -68,7 +71,7 @@ export default {
   },
   created() {
     this._getSlider();
-    this._getRecommend();
+    this._getDiscList();
   },
   methods: {
     imgLoad() {
@@ -82,12 +85,14 @@ export default {
         if (res.code == ERR_OK) this.sliderItem = res.focus.data.content;
       });
     },
-    _getRecommend() {
-      getRecommend().then((res) => {
-        if (res.code == ERR_OK)
-          this.recommendItem = res.recomPlaylist.data.v_hot;
-      });
-    },
+    _getDiscList () {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.discList = res.data.list
+            console.log(this.discList);
+          }
+        })
+      },
     bottomPlayer(){
       if(this.getPlaylist.length>0){
           this.$refs.recommend.style.bottom =  this.MINI_PLAYER_HEIGHT+"px"
@@ -96,6 +101,15 @@ export default {
       }
       this.$refs.scroll.refresh()
     },
+    selectSong(item){
+      this.$router.push({
+        path: `/recommend/${item.dissid}`,
+      });
+      this._setDiscSongs(item)
+    },
+    ...mapMutations({
+      _setDiscSongs : "SET_DISC"
+    })
   },
 };
 </script>
