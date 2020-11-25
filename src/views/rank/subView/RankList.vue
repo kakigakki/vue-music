@@ -1,39 +1,44 @@
 <template>
   <transition appear name="slide">
-    <musicList :title="title" :bgImg="bgImage" :data="songsList" ></musicList>
+    <musicList :title="title" :data="rankList" :bgImg="bgImg" :isRankView="true"></musicList>
   </transition>
 </template>
 
 <script>
 import musicList from "components/musicList/musicList.vue";
 import { createSong, isValidSong, setSongsUrl } from "common/js/song.js";
-import { getSongList } from "api/recommend.js";
+import { getMusicList } from "api/rank.js";
+import { ERR_OK } from "api/config";
 import { mapGetters } from "vuex";
 export default {
   components: {
     musicList,
   },
-  created() {
-      if(!this.getDisc.dissid){
-          this.$router.push({
-              path:"/recommend"
-          })
-      }
-    this._getDiscSongs();
-  },
   data() {
     return {
-      songsList: [],
+      rankList: [],
     };
   },
+  created() {
+    this._getMusicList(this.getRankList.id);
+  },
+  computed: {
+    ...mapGetters(["getRankList"]),
+    title() {
+      return this.getRankList.topTitle;
+    },
+    bgImg(){
+        return this.rankList[0]?.image||this.getRankList.picUrl
+    }
+  },
   methods: {
-    _getDiscSongs() {
-      getSongList(this.getDisc.dissid).then((res) => {
-        if (res.code === 0) {
-          //将获得的数据包装成需要的歌曲信息
-          setSongsUrl(this._normalizeSongs(res.cdlist[0].songlist)).then((res) => {
-            this.songsList = res;
-          });
+    _getMusicList(id) {
+      getMusicList(id).then((res) => {
+        if (res.code === ERR_OK) {
+          setSongsUrl(this._normalizeSongs(res.songlist)).then(res=>{
+              this.rankList =res
+          })
+          
         }
       });
     },
@@ -42,22 +47,14 @@ export default {
       //暂存处理完的所有歌曲信息
       let temp = [];
       songList.forEach((musicData) => {
+        const data = musicData.data
         //判断歌曲是否依然可播放
-        if (isValidSong(musicData)) {
+        if (isValidSong(data)) {
           //工厂模式制造歌曲
-          temp.push(createSong(musicData));
+          temp.push(createSong(data));
         }
       });
       return temp;
-    },
-  },
-  computed: {
-    ...mapGetters(["getDisc"]),
-    title() {
-      return this.getDisc.dissname;
-    },
-    bgImage() {
-      return this.getDisc.imgurl;
     },
   },
 };

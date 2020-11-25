@@ -25,7 +25,7 @@
       @scroll="listenScroll"
     >
       <div class="song-list-wrapper">
-        <songList :songs="data" @selectSong="selectSong"></songList>
+        <songList :songs="data" @selectSong="selectSong" :isRankView="isRankView"></songList>
       </div>
 
       <div class="loading-container" v-show="!data.length">
@@ -63,6 +63,10 @@ export default {
         return [];
       },
     },
+    isRankView:{
+      type:Boolean,
+      default:false
+    }
   },
   data() {
     return {
@@ -73,7 +77,7 @@ export default {
   computed: {
     //拼接图片地址
     getBgImg() {
-      return `url(${this.bgImg})`;
+     return `url(${this.bgImg})`
     },
   },
   mounted() {
@@ -100,7 +104,6 @@ export default {
       });
     },
     randomPlay() {
-      console.log(this.data);
       this.randomPlayAll(this.data);
     },
     bottomPlayer() {

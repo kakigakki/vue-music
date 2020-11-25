@@ -6,5 +6,6 @@ export default {
     seqlist: [],
     mode: 0,
     currentIndex: -1,
-    disc: []
+    disc: [],
+    rankList: []
 };

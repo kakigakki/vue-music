@@ -6,5 +6,6 @@ export default {
     getSeqlist: state => state.seqlist,
     getMode: state => state.mode,
     getCurrentIndex: state => state.currentIndex,
-    getDisc: state => state.disc
+    getDisc: state => state.disc,
+    getRankList: state => state.rankList
 };
