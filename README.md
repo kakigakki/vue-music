@@ -1,4 +1,5 @@
 # vue-music
+音楽配信webアプリ（未完成）
 
 ## Project setup
 ```
