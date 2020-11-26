@@ -1,4 +1,4 @@
-# vue-music
+# KakiMusic
 音楽配信webアプリ（未完成）
 
 ## Project setup
