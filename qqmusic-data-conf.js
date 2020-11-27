@@ -119,4 +119,16 @@ module.exports = function before(app, server, compiler) {
                 console.log(e);
             });
     });
+    //获取搜索歌单
+    app.get('/api/search', function(req, res) {
+        const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+        sendAxiosAjax(url, req.query)
+            .then(response => {
+                var ret = response.data
+                return res.json(ret)
+            })
+            .catch(e => {
+                console.log(e);
+            })
+    })
 };

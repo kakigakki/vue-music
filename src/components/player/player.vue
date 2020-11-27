@@ -450,7 +450,6 @@ export default {
       this.touchLyric.init = true;
       this.touchLyric.startX = e.touches[0].pageX;
       this.touchLyric.startY = e.touches[0].pageY;
-      console.log(this.touchLyric);
     },
     touchMove(e) {
       if (!this.touchLyric.init) return;

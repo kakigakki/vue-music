@@ -73,7 +73,6 @@ export default {
     },
     changeProgress(e){
      let jumpDis = e.touches[0].pageX-this.progressBarClientX
-     console.log(jumpDis);
        this.touchData.percent = jumpDis/this.maxBarClientWidth
       this.$emit("dragEnd",this.touchData.percent)
       this.setProgress(jumpDis)
