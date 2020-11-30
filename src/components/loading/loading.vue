@@ -1,5 +1,5 @@
 <template>
-  <div class="loading">
+  <div class="loading" ref="loading" >
     <div class="wrap">
       <div class="bar"></div>
       <div class="bar"></div>
@@ -12,13 +12,24 @@
   </div>
 </template>
 
+
 <script>
+
+import {prefixStyle} from "common/js/dom"
+const TRANSFORM = prefixStyle("transform")
 export default {
   props: {
     title: {
       type: String,
       default: ""
+    },
+    size:{
+      type:Number,
+      default:1
     }
+  },
+  mounted(){
+      this.$refs.loading.style[TRANSFORM] = `scale(${this.size})`
   }
 };
 </script>
@@ -37,8 +48,8 @@ export default {
   }
 
   .bar {
-    width: 10px;
-    height: 30px;
+    width: 7px;
+    height: 24px;
     display: inline-block;
     animation: loading 1s ease-in-out infinite;
     transform-origin: bottom center;

@@ -2,7 +2,7 @@
   <div class="search-box">
     <i class="icon-search"></i>
     <input class="box" v-model="query" />
-    <i class="icon-dismiss" @click="clear"></i>
+    <i class="icon-dismiss" @click="clear" v-show="query.length"></i>
   </div>
 </template>
 

@@ -3,7 +3,7 @@
     <div class="search-box-wrapper">
       <searchBox :hotKey="hot" @searchSongs="searchSongs"></searchBox>
     </div>
-    <div class="shortcut-wrapper"  v-show="!hot">
+    <div class="shortcut-wrapper" v-show="!hot">
       <div class="shortcut">
         <div class="hot-key">
           <div class="title">热门搜索</div>
@@ -22,21 +22,25 @@
         </div>
       </div>
     </div>
-    <div class="search-result"  v-show="hot">
-      <suggest :hotKey="hot"></suggest>
+    <div class="search-result" v-show="hot">
+      <suggest :hotKey="hot" @enterItem="enterItem"></suggest>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import searchBox from "components/searchBox/SearchBox";
-import suggest from "components/suggest/Suggest"
-import { getHotKey,search } from "api/search";
+import suggest from "components/suggest/Suggest";
+import { getHotKey, search } from "api/search";
+import { Singer } from "common/js/singer.js";
 import { ERR_OK } from "api/config";
+import {mapMutations} from "vuex"
+const SINGER_TYPE = "singerType";
 export default {
   components: {
     searchBox,
-    suggest
+    suggest,
   },
   data() {
     return {
@@ -57,12 +61,25 @@ export default {
         }
       });
     },
-    selectHotkey(item){
-      this.hot = item.k
+    selectHotkey(item) {
+      this.hot = item.k;
     },
-    searchSongs(query){
-      this.hot = query
-    }
+    searchSongs(query) {
+      this.hot = query;
+    },
+    enterItem(item,song) {
+      if (item.type === SINGER_TYPE) {
+        const singer = new Singer(item.singermid,item.singername)
+        this.$router.push({
+          path: `/search/${singer.id}`,
+        });
+        //将singer存进vuex,方便详情页使用
+        this._setSinger(singer);
+      }
+    },
+    ...mapMutations({
+      _setSinger : "SET_SINGER"
+    })
   },
 };
 </script>

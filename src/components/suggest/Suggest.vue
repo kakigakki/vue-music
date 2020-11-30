@@ -1,32 +1,41 @@
 <template>
-  <scroll class="suggest">
+
+    <scroll class="suggest" :pullup="true" @scrollToEnd="searchMore" ref="scroll">
     <div class="suggest-list">
       <ul>
-        <li class="suggest-item" v-for="(item,index) in suggestList" :key="index">
+        <li
+          class="suggest-item"
+          v-for="(item, index) in suggestList"
+          :key="index"
+          @click="enterDetail(item)"
+        >
           <div class="icon">
-              <span :class="getClsIcon(item)"></span>
+            <span :class="getClsIcon(item)"></span>
           </div>
           <div class="name">
-              <span class="text" v-html="getName(item)"></span>
+            <span class="text" v-html="getName(item)"></span>
           </div>
         </li>
       </ul>
+      <loading v-show="hasMore" :size="0.7"></loading>
     </div>
   </scroll>
 </template>
 
 <script>
 import scroll from "components/scroll/myScroll";
-import { createSong, isValidSong, setSongsUrl } from "common/js/song.js";
+import loading from "components/loading/loading"
+import { createSong, isValidSong, setSongsUrl,filterSinger } from "common/js/song.js";
 import { ERR_OK } from "api/config";
 
 import { search } from "api/search";
 
-const PER_PAGE = 20;
+const PER_PAGE_COUNT = 20;
 const SINGER_TYPE = "singerType";
 export default {
   components: {
     scroll,
+    loading
   },
   props: {
     hotKey: {
@@ -42,42 +51,76 @@ export default {
     return {
       page: 1,
       suggestList: [],
+      hasMore :false
     };
   },
-  created(){
-      console.log(1);
-  },
   methods: {
-      getClsIcon(item){
-          if(item.type===SINGER_TYPE){
-              return "icon-mine"
-          }
-          return "icon-music"
-      },
-      getName(item){
-          if(item.type===SINGER_TYPE){
-              return item.singername
-          }
-          return item.name
-      },
-    _search(query) {
-      this.page = 1;
-      search(query, this.page, this.showSinger, PER_PAGE).then((res) => {
+    getClsIcon(item) {
+      if (item.type === SINGER_TYPE) {
+        return "icon-mine";
+      }
+      return "icon-music";
+    },
+    getName(item) {
+      if (item.type === SINGER_TYPE) {
+        return item.singername;
+      }
+      return `${item.name}-${item.singer}`;
+    },
+    searchMore(){
+      if(this.hasMore){
+        search(this.hotKey, ++this.page, this.showSinger, PER_PAGE_COUNT).then((res) => {
         if (res.code === ERR_OK) {
-          this.suggestList = this._nomalizeSuggestList(res.data);
-        }  
+          const songlist = this._nomalizeSuggestList(res.data)
+          this.suggestList.push(...songlist)
+          this.$refs.scroll.refresh()
+          setTimeout(() => {
+              this._checkMore(songlist)
+          }, 20);
+        }
       });
+      }
+    },
+    //进入歌手详情页点击事件
+    enterDetail(singerOrSong) {
+
+      this.$emit("enterItem",singerOrSong)
+    },
+    _search() {
+      this.page = 1;
+      this.hasMore =true
+      //每次输入的时候，回到顶部
+      this.$refs.scroll.scrollTo(0,0)
+      search(this.hotKey, this.page, this.showSinger, PER_PAGE_COUNT).then((res) => {
+        if (res.code === ERR_OK) {
+         const songlist = this._nomalizeSuggestList(res.data);
+         this.suggestList =songlist
+          this.$refs.scroll.refresh()
+          setTimeout(() => {
+              this._checkMore(songlist)
+          }, 20);
+        }
+      });
+    },
+    _checkMore(songs){
+      if(songs.length && songs.length===PER_PAGE_COUNT){
+         this.hasMore = true
+      }else{
+        this.hasMore = false
+      }
     },
     _nomalizeSuggestList(data) {
       let arr = [];
       if (data.zhida?.singername && this.page === 1) {
-        arr.push({...data.zhida,...{type: SINGER_TYPE} });
+        arr.push({ ...data.zhida, ...{ type: SINGER_TYPE } });
       }
       let musicData = data.song.list;
-      setSongsUrl(this._normalizeSongs(musicData)).then((res) => {
-        arr.push(...res)
-      });
-      return arr;
+       setSongsUrl(this._normalizeSongs(musicData)).then((res) => {
+         arr.push(...res)
+       }).catch(err=>{
+         console.log(err);
+       });
+       return arr
     },
     //将获得的歌曲数据弄成我们想要的样子
     _normalizeSongs(songList) {
@@ -95,9 +138,9 @@ export default {
   },
   watch: {
     hotKey(nVal) {
-     console.log(11);
+      console.log(11);
       if (nVal === "") return;
-      this._search(nVal);
+      this._search();
     },
   },
 };

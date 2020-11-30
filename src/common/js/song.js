@@ -72,5 +72,7 @@ export function setSongsUrl(songs) {
             return false;
         });
         return songs;
+    }).catch(error => {
+        return Promise.reject(error)
     });
 }
