@@ -216,9 +216,13 @@ export default {
   watch: {
     getCurrentIndex(nVal) {
       this.currentSong = this.getPlaylist[nVal];
-      this.$refs.bgImg.style.backgroundImage = `url("${this.currentSong.image}")`;
+      
+    },
+    getPlaylist(nVal){
+      this.currentSong = nVal[this.getCurrentIndex]
     },
     currentSong(nVal) {
+      this.$refs.bgImg.style.backgroundImage = `url("${nVal.image}")`;
       this.$nextTick(() => {
         //DOM更新完后再进行播放歌曲操作
         this.setPlaying(true);

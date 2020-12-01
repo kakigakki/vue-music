@@ -35,7 +35,7 @@ import suggest from "components/suggest/Suggest";
 import { getHotKey, search } from "api/search";
 import { Singer } from "common/js/singer.js";
 import { ERR_OK } from "api/config";
-import {mapMutations} from "vuex"
+import { mapMutations, mapActions } from "vuex";
 const SINGER_TYPE = "singerType";
 export default {
   components: {
@@ -67,19 +67,23 @@ export default {
     searchSongs(query) {
       this.hot = query;
     },
-    enterItem(item,song) {
+    enterItem(item) {
       if (item.type === SINGER_TYPE) {
-        const singer = new Singer(item.singermid,item.singername)
+        const singer = new Singer(item.singermid, item.singername);
         this.$router.push({
           path: `/search/${singer.id}`,
         });
         //将singer存进vuex,方便详情页使用
         this._setSinger(singer);
+      } else {
+        console.log(item);
+        this.addToPlaylist(item)
       }
     },
     ...mapMutations({
-      _setSinger : "SET_SINGER"
-    })
+      _setSinger: "SET_SINGER",
+    }),
+    ...mapActions(["addToPlaylist"]),
   },
 };
 </script>
