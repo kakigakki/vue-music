@@ -15,3 +15,15 @@ export function shuffle(list) {
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
+export function debounce(func, delay = 500) {
+    let timer
+    return function(...arg) {
+        if (timer) {
+            clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
+            func.apply(this, arg)
+        }, delay);
+    }
+}

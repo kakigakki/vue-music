@@ -1,18 +1,24 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input class="box" v-model="query" />
+    <input class="box" v-model="query" ref="input" />
     <i class="icon-dismiss" @click="clear" v-show="query.length"></i>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import {debounce} from "common/js/util.js"
 export default {
   props: {
     hotKey: {
       type: String,
       default: "",
     },
+  },
+  created() {
+    this.$watch("query", debounce((nVal, oVal) => {
+      this.$emit("searchSongs", nVal);
+    },300));
   },
   data() {
     return {
@@ -21,18 +27,17 @@ export default {
   },
   watch: {
     hotKey(nVal) {
-        console.log(1);
       this.query = nVal;
     },
-    query(nVal, oVal) {
-      this.$emit("searchSongs", nVal);
-    },
   },
-  methods:{
-      clear(){
-          this.query = ""
-      }
-  }
+  methods: {
+    clear() {
+      this.query = "";
+    },
+    blur(){
+      this.$refs.input.blur()
+    }
+  },
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <searchBox :hotKey="hot" @searchSongs="searchSongs"></searchBox>
+      <searchBox :hotKey="hot" @searchSongs="searchSongs" ref="searchBox"></searchBox>
     </div>
     <div class="shortcut-wrapper" v-show="!hot">
       <div class="shortcut">
@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="search-result" v-show="hot">
-      <suggest :hotKey="hot" @enterItem="enterItem"></suggest>
+      <suggest @blurInput="blurInput" :hotKey="hot" @enterItem="enterItem"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -54,7 +54,6 @@ export default {
   methods: {
     _getHotKey() {
       getHotKey().then((res) => {
-        console.log(res);
         if (res.code === ERR_OK) {
           //只取前面10个
           this.hotKey = res.data.hotkey.slice(0, 10);
@@ -76,9 +75,11 @@ export default {
         //将singer存进vuex,方便详情页使用
         this._setSinger(singer);
       } else {
-        console.log(item);
         this.addToPlaylist(item)
       }
+    },
+    blurInput(){
+      this.$refs.searchBox.blur()
     },
     ...mapMutations({
       _setSinger: "SET_SINGER",

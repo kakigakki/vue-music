@@ -67,7 +67,6 @@ export default {
             }
             //把点击歌曲插入到当前播放歌曲的下一首
             newPlaylist.splice(newIndex, 0, song)
-            console.log(newPlaylist, newIndex);
 
             /* seqlist操作 */
             let newSeqlist = seqlist.slice()
@@ -87,7 +86,6 @@ export default {
             }
             //把点击歌曲插入到当前播放歌曲的下一首
             newSeqlist.splice(newIndex_seq, 0, song)
-            console.log(newSeqlist, newIndex_seq);
 
             //设置播放列表
             commit(types.SET_PLAYLIST, newPlaylist)

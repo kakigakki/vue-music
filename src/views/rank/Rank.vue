@@ -60,7 +60,6 @@ export default {
       this._setRandList(item)
     },
     bottomPlayer(){
-      console.log(this.getPlaylist);
       if(this.getPlaylist.length>0){
           this.$refs.rank.style.bottom =  this.MINI_PLAYER_HEIGHT+"px"
       }else{

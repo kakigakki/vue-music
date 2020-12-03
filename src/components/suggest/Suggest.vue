@@ -1,6 +1,12 @@
 <template>
-
-    <scroll class="suggest" :pullup="true" @scrollToEnd="searchMore" ref="scroll">
+  <scroll
+    class="suggest"
+    :pullup="true"
+    @scrollToEnd="searchMore"
+    ref="scroll"
+    :beforeScroll="true"
+    @beforeScroll="blurInput"
+  >
     <div class="suggest-list">
       <ul>
         <li
@@ -19,23 +25,33 @@
       </ul>
       <loading v-show="hasMore" :size="0.7"></loading>
     </div>
+    <noResult v-show="!hasMore && !suggestList.length"></noResult>
   </scroll>
 </template>
 
 <script>
 import scroll from "components/scroll/myScroll";
-import loading from "components/loading/loading"
-import { createSong, isValidSong, setSongsUrl,filterSinger } from "common/js/song.js";
+import loading from "components/loading/loading";
+import noResult from "components/noResult/NoResult";
+import {
+  createSong,
+  isValidSong,
+  setSongsUrl,
+  filterSinger,
+} from "common/js/song.js";
 import { ERR_OK } from "api/config";
+import { playerMixin } from "common/js/mixins.js";
 
 import { search } from "api/search";
 
 const PER_PAGE_COUNT = 20;
 const SINGER_TYPE = "singerType";
 export default {
+  mixins: [playerMixin],
   components: {
     scroll,
-    loading
+    loading,
+    noResult,
   },
   props: {
     hotKey: {
@@ -51,7 +67,7 @@ export default {
     return {
       page: 1,
       suggestList: [],
-      hasMore :false
+      hasMore: false,
     };
   },
   methods: {
@@ -67,46 +83,64 @@ export default {
       }
       return `${item.name}-${item.singer}`;
     },
-    searchMore(){
-      if(this.hasMore){
-        search(this.hotKey, ++this.page, this.showSinger, PER_PAGE_COUNT).then((res) => {
-        if (res.code === ERR_OK) {
-          const songlist = this._nomalizeSuggestList(res.data)
-          this.suggestList.push(...songlist)
-          this.$refs.scroll.refresh()
-          setTimeout(() => {
-              this._checkMore(songlist)
-          }, 20);
-        }
-      });
+    searchMore() {
+      if (this.hasMore) {
+        search(this.hotKey, ++this.page, this.showSinger, PER_PAGE_COUNT).then(
+          (res) => {
+            if (res.code === ERR_OK) {
+              const songlist = this._nomalizeSuggestList(res.data);
+              this.suggestList.push(...songlist);
+              this.$refs.scroll.refresh();
+              setTimeout(() => {
+                this._checkMore(songlist);
+              }, 20);
+            }
+          }
+        );
       }
     },
     //进入歌手详情页点击事件
     enterDetail(singerOrSong) {
-
-      this.$emit("enterItem",singerOrSong)
+      this.$emit("enterItem", singerOrSong);
+    },
+    bottomPlayer() {
+      if (this.$refs.scroll.style) {
+        if (this.getPlaylist.length > 0) {
+          this.$refs.scroll.style.height = calc(
+            (100 % -this.MINI_PLAYER_HEIGHT) + "px"
+          );
+        } else {
+          this.$refs.scroll.style.height = "100%";
+        }
+        this.$refs.scroll.refresh();
+      }
+    },
+    blurInput(){
+      this.$emit("blurInput")
     },
     _search() {
       this.page = 1;
-      this.hasMore =true
+      this.hasMore = true;
       //每次输入的时候，回到顶部
-      this.$refs.scroll.scrollTo(0,0)
-      search(this.hotKey, this.page, this.showSinger, PER_PAGE_COUNT).then((res) => {
-        if (res.code === ERR_OK) {
-         const songlist = this._nomalizeSuggestList(res.data);
-         this.suggestList =songlist
-          this.$refs.scroll.refresh()
-          setTimeout(() => {
-              this._checkMore(songlist)
-          }, 20);
+      this.$refs.scroll.scrollTo(0, 0);
+      search(this.hotKey, this.page, this.showSinger, PER_PAGE_COUNT).then(
+        (res) => {
+          if (res.code === ERR_OK) {
+            const songlist = this._nomalizeSuggestList(res.data);
+            this.suggestList = songlist;
+            this.$refs.scroll.refresh();
+            setTimeout(() => {
+              this._checkMore(songlist);
+            }, 20);
+          }
         }
-      });
+      );
     },
-    _checkMore(songs){
-      if(songs.length && songs.length===PER_PAGE_COUNT){
-         this.hasMore = true
-      }else{
-        this.hasMore = false
+    _checkMore(songs) {
+      if (songs.length && songs.length === PER_PAGE_COUNT) {
+        this.hasMore = true;
+      } else {
+        this.hasMore = false;
       }
     },
     _nomalizeSuggestList(data) {
@@ -115,12 +149,14 @@ export default {
         arr.push({ ...data.zhida, ...{ type: SINGER_TYPE } });
       }
       let musicData = data.song.list;
-       setSongsUrl(this._normalizeSongs(musicData)).then((res) => {
-         arr.push(...res)
-       }).catch(err=>{
-         console.log(err);
-       });
-       return arr
+      setSongsUrl(this._normalizeSongs(musicData))
+        .then((res) => {
+          arr.push(...res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return arr;
     },
     //将获得的歌曲数据弄成我们想要的样子
     _normalizeSongs(songList) {
@@ -138,7 +174,6 @@ export default {
   },
   watch: {
     hotKey(nVal) {
-      console.log(11);
       if (nVal === "") return;
       this._search();
     },
