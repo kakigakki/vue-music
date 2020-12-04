@@ -5,7 +5,7 @@ const debug = process.env.NODE_ENV !== "production";
 export function getSingerList() {
     const url = debug ?
         "/api/getSingerList" :
-        "http://106.55.149.238/music/api/getSingerList";
+        "http://106.55.149.238/KakiMusic/api/getSingerList";
     const data = Object.assign({}, qqMusicConfigParam, {
         channel: "singer",
         page: "list",
@@ -28,7 +28,7 @@ export function getSingerList() {
 export function getSingerSongList(singerId) {
     const url = debug ?
         "/api/getSingerSongList" :
-        "http://106.55.149.238/music/api/getSingerSongList";
+        "http://106.55.149.238/KakiMusic/api/getSingerSongList";
 
     const data = Object.assign({}, qqMusicConfigParam, {
         hostUin: 0,
