@@ -11,6 +11,7 @@
         "axios": "^0.19.2",
         "better-scroll": "^1.15.2",
         "compression": "^1.7.4",
+        "connect-history-api-fallback": "^1.6.0",
         "cookie-parser": "^1.4.5",
         "core-js": "^3.6.5",
         "create-keyframe-animation": "^0.1.0",
