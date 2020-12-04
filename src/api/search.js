@@ -18,7 +18,7 @@ export function getHotKey() {
 }
 
 export function search(query, page, zhida, perpage) {
-    const url = debug ? '/api/search' : 'http://106.55.149.238/KakiMusic/api/search'
+    const url = debug ? '/api/search' : 'http://106.55.149.238/api/search'
 
     const data = Object.assign({}, qqMusicConfigParam, {
         w: query,
