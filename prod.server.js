@@ -3,7 +3,6 @@ var compression = require('compression')
 var axios = require('axios')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
-var csrf = require('xsrf')
 var history = require('connect-history-api-fallback')
 
 var vueAxios = axios.create({
@@ -28,19 +27,13 @@ var port = process.env.PORT || 9123
 
 var app = express()
 
-var csrfProtection = csrf({
-  cookie: true,
-  ignoreMethods: ['HEAD', 'OPTIONS'],
-  checkPathReg: /^\/api/
-})
 app.use(cookieParser())
-app.use(csrfProtection)
 app.use(history())
 
 var apiRoutes = express.Router()
 
 // 获取 qq music 推荐页 recomPlayList信息
-apiRoutes.get('/getDiscList', csrfProtection, function (req, res) {
+apiRoutes.get('/getDiscList', function (req, res) {
   var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
   sendAxiosAjax(url, req.query)
     .then(response => {
@@ -51,7 +44,7 @@ apiRoutes.get('/getDiscList', csrfProtection, function (req, res) {
     })
 })
 
-apiRoutes.get('/getCdInfo', csrfProtection, function (req, res) {
+apiRoutes.get('/getCdInfo', function (req, res) {
   const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
   axios.get(url, {
     headers: {
@@ -68,7 +61,7 @@ apiRoutes.get('/getCdInfo', csrfProtection, function (req, res) {
 })
 
 // 获取 歌手的信息
-apiRoutes.get('/getSingerList', csrfProtection, function (req, res) {
+apiRoutes.get('/getSingerList', function (req, res) {
   const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
   axios
     .get(url, {
@@ -83,7 +76,7 @@ apiRoutes.get('/getSingerList', csrfProtection, function (req, res) {
 })
 
 // 获取 歌手详情页的歌单信息
-apiRoutes.get('/getSingerSongList', csrfProtection, function (req, res) {
+apiRoutes.get('/getSingerSongList', function (req, res) {
   const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
   sendAxiosAjax(url, req.query)
     .then(response => {
@@ -94,7 +87,7 @@ apiRoutes.get('/getSingerSongList', csrfProtection, function (req, res) {
     })
 })
 
-apiRoutes.post('/getPurlUrl', bodyParser.json(), csrfProtection, function (req, res) {
+apiRoutes.post('/getPurlUrl', bodyParser.json(), function (req, res) {
   const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
   axios
     .post(url, req.body, {
@@ -113,7 +106,7 @@ apiRoutes.post('/getPurlUrl', bodyParser.json(), csrfProtection, function (req, 
 })
 
 // 获取 歌手详情页的歌单信息
-apiRoutes.get('/lyric', csrfProtection, function (req, res) {
+apiRoutes.get('/lyric', function (req, res) {
   const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
   sendAxiosAjax(url, req.query)
     .then(response => {
@@ -125,7 +118,7 @@ apiRoutes.get('/lyric', csrfProtection, function (req, res) {
     })
 })
 // 获取搜索歌单
-apiRoutes.get('/search', csrfProtection, function (req, res) {
+apiRoutes.get('/search', function (req, res) {
   const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
   sendAxiosAjax(url, req.query)
     .then(response => {
@@ -139,7 +132,7 @@ apiRoutes.get('/search', csrfProtection, function (req, res) {
 
 // #region 推荐页
 // 获取 qq music 推荐页 slider信息
-app.get('/api/getTopBanner', csrfProtection, function (req, res) {
+app.get('/api/getTopBanner', function (req, res) {
   const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
   sendAxiosAjax(url, req.query)
     .then(response => {
