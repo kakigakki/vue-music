@@ -10,7 +10,7 @@
       <div class="play-wrapper" v-show="showPlayBtn && data.length">
         <div class="play" @click="randomPlay">
           <i class="icon-play"></i>
-          <p class="text">随机播放全部</p>
+          <p class="text">Random Play</p>
         </div>
       </div>
       <div class="filter" ref="filter"></div>
@@ -25,7 +25,11 @@
       @scroll="listenScroll"
     >
       <div class="song-list-wrapper">
-        <songList :songs="data" @selectSong="selectSong" :isRankView="isRankView"></songList>
+        <songList
+          :songs="data"
+          @selectSong="selectSong"
+          :isRankView="isRankView"
+        ></songList>
       </div>
 
       <div class="loading-container" v-show="!data.length">
@@ -63,10 +67,10 @@ export default {
         return [];
       },
     },
-    isRankView:{
-      type:Boolean,
-      default:false
-    }
+    isRankView: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -77,7 +81,7 @@ export default {
   computed: {
     //拼接图片地址
     getBgImg() {
-     return `url(${this.bgImg})`
+      return `url(${this.bgImg})`;
     },
   },
   mounted() {

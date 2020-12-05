@@ -1,12 +1,16 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <searchBox :hotKey="hot" @searchSongs="searchSongs" ref="searchBox"></searchBox>
+      <searchBox
+        :hotKey="hot"
+        @searchSongs="searchSongs"
+        ref="searchBox"
+      ></searchBox>
     </div>
     <div class="shortcut-wrapper" v-show="!hot">
       <div class="shortcut">
         <div class="hot-key">
-          <div class="title">热门搜索</div>
+          <div class="title">Trending</div>
           <ul>
             <li
               v-for="(item, index) in hotKey"
@@ -18,12 +22,16 @@
           </ul>
         </div>
         <div class="search-history">
-          <div class="title">搜索历史</div>
+          <div class="title">History</div>
         </div>
       </div>
     </div>
     <div class="search-result" v-show="hot">
-      <suggest @blurInput="blurInput" :hotKey="hot" @enterItem="enterItem"></suggest>
+      <suggest
+        @blurInput="blurInput"
+        :hotKey="hot"
+        @enterItem="enterItem"
+      ></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -75,11 +83,11 @@ export default {
         //将singer存进vuex,方便详情页使用
         this._setSinger(singer);
       } else {
-        this.addToPlaylist(item)
+        this.addToPlaylist(item);
       }
     },
-    blurInput(){
-      this.$refs.searchBox.blur()
+    blurInput() {
+      this.$refs.searchBox.blur();
     },
     ...mapMutations({
       _setSinger: "SET_SINGER",
@@ -112,7 +120,7 @@ export default {
 
         .title {
           margin-bottom: 20px;
-          font-size: $font-size-medium;
+          font-size: $font-size-large;
           color: $color-theme;
         }
 
@@ -135,7 +143,7 @@ export default {
           display: flex;
           align-items: center;
           height: 40px;
-          font-size: $font-size-medium;
+          font-size: $font-size-large;
           color: $color-theme;
 
           .text {

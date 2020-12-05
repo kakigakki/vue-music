@@ -19,10 +19,10 @@
             </slider>
           </div>
           <div class="recommend-list">
-            <p class="list-title">热门歌单推荐</p>
+            <p class="list-title">Popular Soundtrack</p>
             <ul>
               <li
-                v-for="(item,index) in discList"
+                v-for="(item, index) in discList"
                 :key="index"
                 class="item"
                 @click="selectSong(item)"
@@ -49,14 +49,14 @@
 
 <script>
 import { ERR_OK } from "api/config.js";
-import { getSlider, getSongList,getDiscList } from "api/recommend.js";
+import { getSlider, getSongList, getDiscList } from "api/recommend.js";
 import slider from "components/slider/slider";
 import scroll from "components/scroll/myScroll";
 import loading from "components/loading/loading";
-import {playerMixin} from "common/js/mixins.js"
-import {mapMutations} from "vuex"
+import { playerMixin } from "common/js/mixins.js";
+import { mapMutations } from "vuex";
 export default {
-    mixins:[playerMixin],
+  mixins: [playerMixin],
   data() {
     return {
       sliderItem: [],
@@ -85,30 +85,30 @@ export default {
         if (res.code == ERR_OK) this.sliderItem = res.focus.data.content;
       });
     },
-    _getDiscList () {
-        getDiscList().then((res) => {
-          if (res.code === ERR_OK) {
-            this.discList = res.data.list
-          }
-        })
-      },
-    bottomPlayer(){
-      if(this.getPlaylist.length>0){
-          this.$refs.recommend.style.bottom =  this.MINI_PLAYER_HEIGHT+"px"
-      }else{
-         this.$refs.recommend.style.bottom =  0
-      }
-      this.$refs.scroll.refresh()
+    _getDiscList() {
+      getDiscList().then((res) => {
+        if (res.code === ERR_OK) {
+          this.discList = res.data.list;
+        }
+      });
     },
-    selectSong(item){
+    bottomPlayer() {
+      if (this.getPlaylist.length > 0) {
+        this.$refs.recommend.style.bottom = this.MINI_PLAYER_HEIGHT + "px";
+      } else {
+        this.$refs.recommend.style.bottom = 0;
+      }
+      this.$refs.scroll.refresh();
+    },
+    selectSong(item) {
       this.$router.push({
         path: `/recommend/${item.dissid}`,
       });
-      this._setDiscSongs(item)
+      this._setDiscSongs(item);
     },
     ...mapMutations({
-      _setDiscSongs : "SET_DISC"
-    })
+      _setDiscSongs: "SET_DISC",
+    }),
   },
 };
 </script>
@@ -138,7 +138,7 @@ export default {
         height: 65px;
         line-height: 65px;
         text-align: center;
-        font-size: $font-size-medium;
+        font-size: $font-size-large;
         color: $color-theme;
       }
 

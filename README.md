@@ -60,16 +60,11 @@ http://106.55.149.238/KakiMusic
 
 ## 全体イメージ
 
-![20201205150447](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150447.png)
-![20201205150500](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150500.png)
-![20201205150510](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150510.png)
-![20201205150652](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150652.png)
-![20201205150516](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150516.png)
-![20201205150540](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150540.png)
-![20201205150547](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150547.png)
-![20201205150629](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150629.png)
-![20201205150601](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150601.png)
-![20201205150613](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205150613.png)
+![20201205171008](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171008.png)
+![20201205171018](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171018.png)
+![20201205171032](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171032.png)
+![20201205171103](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171103.png)
+![20201205171110](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171110.png)
 
 ## Project setup
 

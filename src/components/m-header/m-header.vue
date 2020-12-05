@@ -28,10 +28,10 @@ export default {};
     vertical-align: top;
     margin-top: 6px;
     width: 30px;
-    height: 32px;
+    height: 30px;
     margin-right: 9px;
     bg-image('logo');
-    background-size: 30px 32px;
+    background-size: 30px 30px;
   }
 
   .text {
