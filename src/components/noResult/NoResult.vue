@@ -12,7 +12,7 @@ export default {
   props: {
     msg: {
       type: String,
-      default: "未搜索到任何结果",
+      default: "Nothing",
     },
   },
 };
@@ -21,21 +21,22 @@ export default {
 <style scoped  lang="stylus">
 @import '~common/stylus/variable';
 @import '~common/stylus/mixin';
+
 .no-result {
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color:$color-text-l
+  color: $color-text-l;
 }
 
 .img {
-  margin 20px;
+  margin: 20px;
   height: 48px;
   width: 48px;
-  filter :grayscale(50%);
+  filter: grayscale(50%);
   bg-image('wrong');
-  background-size cover
+  background-size: cover;
 }
 </style>
