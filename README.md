@@ -64,6 +64,12 @@ http://106.55.149.238/kakiMusic
 ![20201205171032](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171032.png)
 ![20201205171103](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171103.png)
 ![20201205171110](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205171110.png)
+![20201205175454](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175454.png)
+![20201205175504](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175504.png)
+![20201205175512](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175512.png)
+![20201205175529](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175529.png)
+![20201205175548](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175548.png)
+![20201205175612](https://raw.githubusercontent.com/kakigakki/picBed/master/imgs/20201205175612.png)
 
 ## Project setup
 
