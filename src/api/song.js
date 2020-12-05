@@ -7,7 +7,7 @@ const debug = process.env.NODE_ENV !== "production";
 
 //获取歌曲的歌词
 export function getLyric(mid) {
-    const url = debug ? '/api/lyric' : 'http://106.55.149.238/api/lyric'
+    const url = debug ? '/api/lyric' : 'http://106.55.149.238/kakiMusic/api/lyric'
 
     const data = Object.assign({}, qqMusicConfigParam, {
         songmid: mid,
@@ -31,7 +31,7 @@ export function getLyric(mid) {
 export function getPurlUrl(songs) {
     const url = debug ?
         "/api/getPurlUrl" :
-        "http://106.55.149.238/api/getPurlUrl";
+        "http://106.55.149.238/kakiMusic/api/getPurlUrl";
     let mids = [];
     let types = [];
 

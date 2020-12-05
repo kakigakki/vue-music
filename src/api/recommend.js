@@ -8,7 +8,7 @@ export function getSlider() {
     // 线上环境地址，根据自己的需要配置修改
     const url = debug ?
         "/api/getTopBanner" :
-        "http://106.55.149.238/api/getTopBanner";
+        "http://106.55.149.238/kakiMusic/api/getTopBanner";
 
     const data = Object.assign({}, qqMusicConfigParam, {
         data: {
@@ -33,7 +33,7 @@ export function getSlider() {
 // 获取推荐列表数据
 export function getDiscList() {
     // 线上环境地址，同学们根据自己的需要配置修改
-    const url = debug ? '/api/getDiscList' : 'http://106.55.149.238/api/getDiscList'
+    const url = debug ? '/api/getDiscList' : 'http://106.55.149.238/kakiMusic/api/getDiscList'
 
     const data = Object.assign({}, qqMusicConfigParam, {
         platform: 'yqq',
@@ -56,7 +56,7 @@ export function getDiscList() {
 
 //获取歌单中的歌曲
 export function getSongList(disstid) {
-    const url = debug ? '/api/getCdInfo' : 'http://106.55.149.238/api/getCdInfo'
+    const url = debug ? '/api/getCdInfo' : 'http://106.55.149.238/kakiMusic/api/getCdInfo'
 
     const data = Object.assign({}, qqMusicConfigParam, {
         disstid,
