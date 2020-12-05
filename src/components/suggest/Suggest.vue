@@ -88,12 +88,12 @@ export default {
         search(this.hotKey, ++this.page, this.showSinger, PER_PAGE_COUNT).then(
           (res) => {
             if (res.code === ERR_OK) {
-              const songlist = this._nomalizeSuggestList(res.data);
-              this.suggestList.push(...songlist);
-              this.$refs.scroll.refresh();
-              setTimeout(() => {
-                this._checkMore(songlist);
-              }, 20);
+              this._nomalizeSuggestList(res.data).then((res2) => {
+                this.suggestList.push(...res2);
+                setTimeout(() => {
+                  this._checkMore(res.data);
+                }, 20);
+              });
             }
           }
         );
@@ -115,8 +115,8 @@ export default {
         this.$refs.scroll.refresh();
       }
     },
-    blurInput(){
-      this.$emit("blurInput")
+    blurInput() {
+      this.$emit("blurInput");
     },
     _search() {
       this.page = 1;
@@ -126,21 +126,27 @@ export default {
       search(this.hotKey, this.page, this.showSinger, PER_PAGE_COUNT).then(
         (res) => {
           if (res.code === ERR_OK) {
-            const songlist = this._nomalizeSuggestList(res.data);
-            this.suggestList = songlist;
-            this.$refs.scroll.refresh();
-            setTimeout(() => {
-              this._checkMore(songlist);
-            }, 20);
+            this._nomalizeSuggestList(res.data).then((res2) => {
+              this.suggestList = res2;
+              setTimeout(() => {
+                this._checkMore(res.data);
+              }, 20);
+            });
           }
         }
       );
     },
     _checkMore(songs) {
-      if (songs.length && songs.length === PER_PAGE_COUNT) {
-        this.hasMore = true;
-      } else {
+      const song = songs.song;
+      if (
+        !song.list.length ||
+        song.curnum + (song.curpage - 1) * PER_PAGE_COUNT >= song.totalnum
+      ) {
         this.hasMore = false;
+      } else {
+        if (!this.$refs.scroll.scroll.hasVerticalScroll) {
+          this.searchMore();
+        }
       }
     },
     _nomalizeSuggestList(data) {
@@ -149,14 +155,14 @@ export default {
         arr.push({ ...data.zhida, ...{ type: SINGER_TYPE } });
       }
       let musicData = data.song.list;
-      setSongsUrl(this._normalizeSongs(musicData))
+      return setSongsUrl(this._normalizeSongs(musicData))
         .then((res) => {
           arr.push(...res);
+          return arr;
         })
         .catch((err) => {
           console.log(err);
         });
-      return arr;
     },
     //将获得的歌曲数据弄成我们想要的样子
     _normalizeSongs(songList) {
