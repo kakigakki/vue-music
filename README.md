@@ -15,7 +15,6 @@ http://106.55.149.238/KakiMusic
 -   better-scroll : スクロールライブラリ
 -   stylus :css プリプロセッサ
 -   express :API 取得
--
 
 ## 環境
 
