@@ -7,5 +7,6 @@ export default {
     getMode: state => state.mode,
     getCurrentIndex: state => state.currentIndex,
     getDisc: state => state.disc,
-    getRankList: state => state.rankList
+    getRankList: state => state.rankList,
+    getHistory: state => state.history
 };

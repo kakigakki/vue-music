@@ -25,7 +25,9 @@
       </ul>
       <loading v-show="hasMore" :size="0.7"></loading>
     </div>
-    <noResult v-show="!hasMore && !suggestList.length"></noResult>
+    <noResult
+      v-show="!hasMore && suggestList && !suggestList.length"
+    ></noResult>
   </scroll>
 </template>
 
@@ -89,7 +91,10 @@ export default {
           (res) => {
             if (res.code === ERR_OK) {
               this._nomalizeSuggestList(res.data).then((res2) => {
-                this.suggestList.push(...res2);
+                if (res2 && this.suggestList) {
+                  this.suggestList.push(...res2);
+                }
+                this.$refs.scroll.refresh();
                 setTimeout(() => {
                   this._checkMore(res.data);
                 }, 20);
@@ -128,6 +133,7 @@ export default {
           if (res.code === ERR_OK) {
             this._nomalizeSuggestList(res.data).then((res2) => {
               this.suggestList = res2;
+              this.$refs.scroll.refresh();
               setTimeout(() => {
                 this._checkMore(res.data);
               }, 20);
@@ -139,7 +145,7 @@ export default {
     _checkMore(songs) {
       const song = songs.song;
       if (
-        !song.list.length ||
+        !song.list?.length ||
         song.curnum + (song.curpage - 1) * PER_PAGE_COUNT >= song.totalnum
       ) {
         this.hasMore = false;

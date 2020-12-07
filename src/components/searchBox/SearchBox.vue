@@ -7,7 +7,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {debounce} from "common/js/util.js"
+import { debounce } from "common/js/util.js";
 export default {
   props: {
     hotKey: {
@@ -16,9 +16,12 @@ export default {
     },
   },
   created() {
-    this.$watch("query", debounce((nVal, oVal) => {
-      this.$emit("searchSongs", nVal);
-    },300));
+    this.$watch(
+      "query",
+      debounce((nVal, oVal) => {
+        this.$emit("searchSongs", nVal);
+      }, 300)
+    );
   },
   data() {
     return {
@@ -34,9 +37,9 @@ export default {
     clear() {
       this.query = "";
     },
-    blur(){
-      this.$refs.input.blur()
-    }
+    blur() {
+      this.$refs.input.blur();
+    },
   },
 };
 </script>
@@ -56,7 +59,7 @@ export default {
 
   .icon-search {
     font-size: 24px;
-    color: $color-background;
+    color: $color-theme;
   }
 
   .box {
@@ -75,7 +78,7 @@ export default {
 
   .icon-dismiss {
     font-size: 16px;
-    color: $color-background;
+    color: $color-theme;
   }
 }
 </style>

@@ -22,7 +22,13 @@
           </ul>
         </div>
         <div class="search-history">
-          <div class="title">History</div>
+          <div class="title">
+            <div class="text">History</div>
+            <span class="clear">
+              <i class="icon-clear"></i>
+            </span>
+          </div>
+          <historyList></historyList>
         </div>
       </div>
     </div>
@@ -40,15 +46,19 @@
 <script>
 import searchBox from "components/searchBox/SearchBox";
 import suggest from "components/suggest/Suggest";
+import historyList from "components/history-list/HistoryList";
+import { getItem } from "common/js/cache.js";
 import { getHotKey, search } from "api/search";
 import { Singer } from "common/js/singer.js";
 import { ERR_OK } from "api/config";
 import { mapMutations, mapActions } from "vuex";
 const SINGER_TYPE = "singerType";
+const HISTORY = "history";
 export default {
   components: {
     searchBox,
     suggest,
+    historyList,
   },
   data() {
     return {

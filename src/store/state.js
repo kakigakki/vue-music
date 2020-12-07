@@ -1,3 +1,5 @@
+import { getItem } from "common/js/cache.js"
+const HISTORY = "history"
 export default {
     singer: [],
     playing: false,
@@ -7,5 +9,6 @@ export default {
     mode: 0,
     currentIndex: -1,
     disc: [],
-    rankList: []
+    rankList: [],
+    history: getItem(HISTORY, [])
 };
