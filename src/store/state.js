@@ -1,5 +1,5 @@
 import { getItem } from "common/js/cache.js"
-const HISTORY = "history"
+const HISTORY = "searchHistory"
 export default {
     singer: [],
     playing: false,

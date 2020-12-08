@@ -1,9 +1,14 @@
 <template>
   <div class="search-list">
     <ul>
-      <li>
-        <span class="text"></span>
-        <span class="icon">
+      <li
+        v-for="(item, index) in searches"
+        :key="index"
+        class="search-item"
+        @click="selectOne(item)"
+      >
+        <span class="text">{{ item }}</span>
+        <span class="icon" @click.stop="deleteOne(item)">
           <i class="icon-delete"></i>
         </span>
       </li>
@@ -12,6 +17,22 @@
 </template>
 
 <script type="text/ecmascript-6">
+export default {
+  props: {
+    searches: {
+      type: Array,
+      default: [],
+    },
+  },
+  methods: {
+    deleteOne(item) {
+      this.$emit("deleteOne", item);
+    },
+    selectOne(item) {
+      this.$emit("selectOne", item);
+    },
+  },
+};
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">

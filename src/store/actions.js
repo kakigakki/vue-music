@@ -1,6 +1,7 @@
 import * as types from "./mutationType";
 import { mode } from "common/js/config.js"
 import { shuffle } from "common/js/util.js"
+import { saveOneHistory, deleteOneHistory, deleteAllHistory } from "common/js/cache.js"
 export default {
     //页面选择歌曲时进入此方法
     selectPlaySong({ commit, state }, { list, index }) {
@@ -96,6 +97,15 @@ export default {
             commit(types.SET_PLAYING, true)
             commit(types.SET_FULLSCREEN, true)
         }
+    },
+    saveOne({ commit }, data) {
+        commit(types.SET_HISTORY, saveOneHistory(data))
+    },
+    deleteOne({ commit }, data) {
+        commit(types.SET_HISTORY, deleteOneHistory(data))
+    },
+    deleteAll({ commit }) {
+        commit(types.SET_HISTORY, deleteAllHistory())
     }
 
 };

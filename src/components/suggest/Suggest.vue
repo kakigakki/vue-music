@@ -69,7 +69,7 @@ export default {
     return {
       page: 1,
       suggestList: [],
-      hasMore: false,
+      hasMore: true,
     };
   },
   methods: {
@@ -94,7 +94,6 @@ export default {
                 if (res2 && this.suggestList) {
                   this.suggestList.push(...res2);
                 }
-                this.$refs.scroll.refresh();
                 setTimeout(() => {
                   this._checkMore(res.data);
                 }, 20);
@@ -133,7 +132,6 @@ export default {
           if (res.code === ERR_OK) {
             this._nomalizeSuggestList(res.data).then((res2) => {
               this.suggestList = res2;
-              this.$refs.scroll.refresh();
               setTimeout(() => {
                 this._checkMore(res.data);
               }, 20);
@@ -186,7 +184,10 @@ export default {
   },
   watch: {
     hotKey(nVal) {
-      if (nVal === "") return;
+      if (nVal === "") {
+        this.suggestList = [];
+        return;
+      }
       this._search();
     },
   },

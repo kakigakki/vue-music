@@ -9,4 +9,5 @@ export default {
     getDisc: state => state.disc,
     getRankList: state => state.rankList,
     getHistory: state => state.history
+
 };

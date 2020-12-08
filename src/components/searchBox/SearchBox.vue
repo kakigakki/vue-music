@@ -8,6 +8,7 @@
 
 <script type="text/ecmascript-6">
 import { debounce } from "common/js/util.js";
+import { mapActions } from "vuex";
 export default {
   props: {
     hotKey: {

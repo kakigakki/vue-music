@@ -27,5 +27,8 @@ export default {
     },
     [types.SET_RANK_LIST](state, rankSongList) {
         state.rankList = rankSongList
+    },
+    [types.SET_HISTORY](state, historyList) {
+        state.history = historyList
     }
 };

@@ -1,4 +1,5 @@
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
+
 
 export const playerMixin = {
     created() {
@@ -16,7 +17,7 @@ export const playerMixin = {
         this.bottomPlayer()
     },
     watch: {
-        getPlaylist(nVal) {
+        getPlaylist() {
             this.bottomPlayer()
         }
     },
