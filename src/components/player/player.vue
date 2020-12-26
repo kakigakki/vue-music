@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" name="fade">
     <transition
       name="normal"
       @enter="enter"
@@ -35,7 +35,7 @@
             </div>
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric">
-                {{currentLineTxt}}
+                {{ currentLineTxt }}
               </div>
             </div>
           </div>
@@ -152,7 +152,6 @@ import scroll from "components/scroll/myScroll";
 import Lyric from "lyric-parser";
 import { prefixStyle } from "common/js/dom.js";
 
-
 const transform = prefixStyle("transform");
 const transition = prefixStyle("transition");
 export default {
@@ -164,7 +163,7 @@ export default {
       currentLyric: null,
       currentLineNum: 0,
       currentMiddle: "cd",
-      currentLineTxt:""
+      currentLineTxt: "",
     };
   },
   created() {
@@ -216,10 +215,9 @@ export default {
   watch: {
     getCurrentIndex(nVal) {
       this.currentSong = this.getPlaylist[nVal];
-      
     },
-    getPlaylist(nVal){
-      this.currentSong = nVal[this.getCurrentIndex]
+    getPlaylist(nVal) {
+      this.currentSong = nVal[this.getCurrentIndex];
     },
     currentSong(nVal) {
       this.$refs.bgImg.style.backgroundImage = `url("${nVal.image}")`;
@@ -255,7 +253,7 @@ export default {
           this.next();
         }
       }
-    }
+    },
   },
   methods: {
     back() {
@@ -440,7 +438,7 @@ export default {
     },
     lyricHandler({ lineNum, txt }) {
       this.currentLineNum = lineNum;
-      this.currentLineTxt = txt
+      this.currentLineTxt = txt;
       //当歌词正在播放的行数大于5时保持在5的位置
       if (lineNum > 5) {
         let lineEl = this.$refs.lyricLine[lineNum - 5];
@@ -448,7 +446,6 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0);
       }
-      
     },
     touchStart(e) {
       this.touchLyric.init = true;

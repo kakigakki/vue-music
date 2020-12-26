@@ -25,7 +25,7 @@
           <div class="search-history">
             <div class="title">
               <div class="text">History</div>
-              <span class="clear" @click="deleteAllHistory">
+              <span class="clear" @click="showDialog">
                 <i class="icon-clear"></i>
               </span>
             </div>
@@ -45,6 +45,12 @@
         @enterItem="enterItem"
       ></suggest>
     </div>
+    <deleteDialog
+      @hideDialog="isDialogShow = false"
+      @clickYes="deleteAllHistory"
+      @clickNo="isDialogShow = false"
+      :isShow="isDialogShow"
+    ></deleteDialog>
     <router-view></router-view>
   </div>
 </template>
@@ -54,6 +60,7 @@ import searchBox from "components/searchBox/SearchBox";
 import suggest from "components/suggest/Suggest";
 import historyList from "components/history-list/HistoryList";
 import scroll from "components/scroll/myScroll";
+import deleteDialog from "components/dialog/Dialog.vue";
 import { getItem } from "common/js/cache.js";
 import { playerMixin } from "common/js/mixins.js";
 import { getHotKey, search } from "api/search";
@@ -68,11 +75,13 @@ export default {
     suggest,
     historyList,
     scroll,
+    deleteDialog,
   },
   data() {
     return {
       hotKey: [],
       hot: "",
+      isDialogShow: false,
     };
   },
   computed: {
@@ -135,8 +144,14 @@ export default {
     deleteOneHistory(item) {
       this.deleteOne(item);
     },
+    showDialog() {
+      if (this.getHistory.length) {
+        this.isDialogShow = true;
+      }
+    },
     deleteAllHistory() {
       this.deleteAll();
+      this.isDialogShow = false;
     },
     bottomPlayer() {
       if (this.getPlaylist.length > 0) {
